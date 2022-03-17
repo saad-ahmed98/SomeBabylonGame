@@ -5,6 +5,10 @@ let engine;
 let scene;
 // vars for handling inputs
 let inputStates = {};
+let jumping = true;
+let jumpingstarted = 0
+var lookAt = 1;
+
 
 window.onload = startGame;
 
@@ -23,16 +27,19 @@ function startGame() {
         let deltaTime = engine.getDeltaTime(); // remind you something ?
 
         tank.move();
+        //tank.lookAt(new BABYLON.Vector3(lookAt*10000000, tank.position.y, 0));
+        //console.log("ici")
+
 
         let heroDude = scene.getMeshByName("heroDude");
-        if(heroDude)
+        if (heroDude)
             heroDude.Dude.move(scene);
 
-        if(scene.dudes) {
-            for(var i = 0 ; i < scene.dudes.length ; i++) {
+        if (scene.dudes) {
+            for (var i = 0; i < scene.dudes.length; i++) {
                 scene.dudes[i].Dude.move(scene);
             }
-        }    
+        }
 
         scene.render();
     });
@@ -42,116 +49,203 @@ function startGame() {
 function createScene() {
     let scene = new BABYLON.Scene(engine);
     let ground = createGround(scene);
+    const groundMaterial = new BABYLON.GridMaterial("groundMaterial", scene);
+    //groundMaterial.diffuseTexture = new BABYLON.Texture("images/grass.jpg");
+    ground.material = groundMaterial;
+
     let freeCamera = createFreeCamera(scene);
     let tank = createTank(scene);
-    BABYLON.SceneLoader.ImportMesh("Lightning Gun", "models/", "LightningGun.glb", scene, function (meshes, particleSystems, skeletons) {
-        for(let i = 0; i<meshes.length;i++){
-            meshes[i].name="gun"+i;
+    //var layer = new BABYLON.Layer('','images/skybox.png', scene, true);
+
+    let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 1687.5, depth: 1, width: 3200 }, scene);
+    skybox.position.y = 100;
+    let skyboxmat = new BABYLON.StandardMaterial("skyboxmat", scene);
+    skybox.material = skyboxmat;
+
+    skyboxmat.diffuseTexture = new BABYLON.Texture("images/skybox.jpg", scene);
+
+    skybox.position.z = 500
+
+
+
+
+    BABYLON.SceneLoader.ImportMesh("Plane", "models/", "cartoonSword.glb", scene, function (meshes, particleSystems, skeletons) {
+        for (let i = 0; i < meshes.length; i++) {
+            meshes[i].name = "sword" + i;
             meshes[i].parent = tank;
             meshes[i].position.x = 6;
-            meshes[i].scaling.x = 2.5;
-            meshes[i].scaling.z=2.5;
-            meshes[i].rotation = new BABYLON.Vector3(0,3.1, 0);
+            meshes[i].position.z = 1;
+
+            meshes[i].scaling.x = 0.3;
+            meshes[i].scaling.z = 0.3;
+            meshes[i].scaling.y = 0.3;
+
+            meshes[i].rotation = new BABYLON.Vector3(0, 20, -5);
         }
     });
+
+    var obstacles = createObstaclesLVL1(scene)
+    for (let i = 0; i < obstacles.length; i++) {
+        obstacles[i].material = groundMaterial;
+    }
+
     //BABYLON.SceneLoader.ImportMesh("", "models/", "RayGun.glb", scene, onGunImported);
-
-    Ammo().then(() => {
-    scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
-    var physicsEngine = scene.getPhysicsEngine();
-    physicsEngine.gravity.y = -100
-
-
-
-    // Add Imposters
-    tank.physicsImpostor = new BABYLON.PhysicsImpostor(tank, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 2, restitution: 0 }, scene);
-    tank.physicsImpostor.physicsBody.collisionFilterGroup = 1
-    tank.position.y=5
-    ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, scene);
-    ground.physicsImpostor.physicsBody.collisionFilterMask = 1 | 2
-
-    
-    addWallPhysics(scene)
-    //box.physicsImpostor = new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.0, restitution: 0.7 }, scene);
-
-    // second parameter is the target to follow
     let followCamera = createFollowCamera(scene, tank);
-    //scene.activeCamera = followCamera;
-    scene.activeCamera = freeCamera;
-
-    createLights(scene);
-
-    //createHeroDude(scene);
-
-    window.addEventListener("mousemove", function () {
-		// We try to pick an object
-		var pickResult = scene.pick(scene.pointerX, scene.pointerY);
-		if (pickResult.hit) {
-			var targetPoint = pickResult.pickedPoint;
-			targetPoint.y = tank.position.y;
-			tank.lookAt(targetPoint);
-		}
-	});
-})
+    scene.activeCamera = followCamera;
+    Ammo().then(() => {
+        scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
+        var physicsEngine = scene.getPhysicsEngine();
+        physicsEngine.setGravity(new BABYLON.Vector3(0, -200, 0));
 
 
 
-var left, right;
-    left = 0;
-    right = 2;
+        // Add Imposters
+        tank.physicsImpostor = new BABYLON.PhysicsImpostor(tank, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 2, restitution: 0 }, scene);
 
-scene.onPointerDown = (e) => {
-    if (e.button === left) {
-        var shootedball = BABYLON.Mesh.CreateSphere("shootedball", 5, 5);
+        tank.position.y = 20
+        ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.1 }, scene);
+        ground.physicsImpostor.registerOnPhysicsCollide(tank.physicsImpostor,function(){
+           console.log("GAME OVER")
+        })
 
-        shootedball.position.x = tank.position.x;
-        shootedball.position.y = tank.position.y;
-        shootedball.position.z = tank.position.z;
+        addObstaclesPhysics(obstacles,tank,scene)
+        //box.physicsImpostor = new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.0, restitution: 0.7 }, scene);
 
-        var pickResult = scene.pick(scene.pointerX, scene.pointerY);
-		if (pickResult.hit) {
-			var targetPoint = pickResult.pickedPoint;
-            if(targetPoint.x - shootedball.position.x > 0){
-                shootedball.position.x+=5
-                targetPoint.x+=5
+        // second parameter is the target to follow
+        //scene.activeCamera = freeCamera;
+
+        createLights(scene);
+
+        //createHeroDude(scene);
+
+        /*window.addEventListener("mousemove", function () {
+            // We try to pick an object
+            var pickResult = scene.pick(scene.pointerX, scene.pointerY);
+            if (pickResult.hit) {
+                var targetPoint = pickResult.pickedPoint;
+                targetPoint.y = tank.position.y;
+                tank.lookAt(targetPoint);
             }
-            else {shootedball.position.x-=5
-                    targetPoint.x-=5
-            }
-            if(targetPoint.z - shootedball.position.z > 0){
-                shootedball.position.z+=5
-                targetPoint.z+=5
-            }
-            else {shootedball.position.z-=5
-            targetPoint.z-=5
-            }
-			targetPoint.y = 20;
-		}
-        shootedball.physicsImpostor = new BABYLON.PhysicsImpostor(shootedball, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 0.1, restitution: 0 }, scene);
-        shootedball.physicsImpostor.physicsBody.collisionFilterGroup = 2
-        shootedball.physicsImpostor.registerOnPhysicsCollide(getWallsImposters(scene),function(sball,walls){
-            scene.removeMesh(sball.object)
-            sball.object.dispose()
+        });
+        */
     })
 
-        translate(shootedball,targetPoint, 5);
+    tank.move = () => {
+        //tank.position.z += -1; // speed should be in unit/s, and depends on
+        // deltaTime !
 
-        setTimeout(() => {
-            shootedball.dispose();
-          }, 3000);
+        // if we want to move while taking into account collision detections
+        // collision uses by default "ellipsoids"
+
+        let yMovement = 0;
+
+        /*if (tank.position.y > 2) {
+            zMovement = 0;
+            yMovement = -2;
+        } 
+        */
+        //tank.moveWithCollisions(new BABYLON.Vector3(0, yMovement, zMovement));
+
+        if (inputStates.up) {
+            if(jumping || jumpingstarted<30){
+                tank.moveWithCollisions(new BABYLON.Vector3(0, 1.2 * tank.speed, 0));
+                tank.lookAt(new BABYLON.Vector3(lookAt*10000000, 0, 0));
+                jumpingstarted++
+                jumping = false;
+                }
+            //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, 1*tank.speed));
+            //tank.moveWithCollisions(tank.frontVector.multiplyByFloats(tank.speed, tank.speed, tank.speed));
+        }
+        if (inputStates.down) {
+            //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, -1*tank.speed));
+            //tank.moveWithCollisions(tank.frontVector.multiplyByFloats(-tank.speed, -tank.speed, -tank.speed));
+
+        }
+        if (inputStates.left) {
+            tank.moveWithCollisions(new BABYLON.Vector3(-1 * tank.speed, 0, 0));
+            //tank.rotation.y -= 0.02;
+            //tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
+            tank.lookAt(new BABYLON.Vector3(-10000000, 0, 0));
+            followCamera.rotationOffset=-90
+            lookAt = -1
+
+        }
+        if (inputStates.right) {
+            tank.moveWithCollisions(new BABYLON.Vector3(1 * tank.speed, 0, 0));
+            //tank.rotation.y += 0.02
+            //tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
+            tank.lookAt(new BABYLON.Vector3(10000000, 0, 0));
+            followCamera.rotationOffset=90
+            lookAt = 1
+        }
+        if (inputStates.space) {
+
+        }
+            //tank.rotation.y += 0.02;
+            //tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
+            //tank.lookAt(new BABYLON.Vector3(10000000, 0, 0));
+
+        }
         
-    }
-}
-scene.onPointerUp = (e) => {
-    if (e.button === right) {
-            
-    }
-    if (e.button === left) {
-        //azfahweg
-    }
-}
 
-   return scene;
+
+    var left, right;
+    left = 0;
+    right = 2;
+    /*
+    scene.onPointerDown = (e) => {
+        if (e.button === left) {
+            var shootedball = BABYLON.Mesh.CreateSphere("shootedball", 5, 5);
+    
+            shootedball.position.x = tank.position.x;
+            shootedball.position.y = tank.position.y;
+            shootedball.position.z = tank.position.z;
+    
+            var pickResult = scene.pick(scene.pointerX, scene.pointerY);
+            if (pickResult.hit) {
+                var targetPoint = pickResult.pickedPoint;
+                if(targetPoint.x - shootedball.position.x > 0){
+                    shootedball.position.x+=5
+                    targetPoint.x+=5
+                }
+                else {shootedball.position.x-=5
+                        targetPoint.x-=5
+                }
+                if(targetPoint.z - shootedball.position.z > 0){
+                    shootedball.position.z+=5
+                    targetPoint.z+=5
+                }
+                else {shootedball.position.z-=5
+                targetPoint.z-=5
+                }
+                targetPoint.y = 20;
+            }
+            shootedball.physicsImpostor = new BABYLON.PhysicsImpostor(shootedball, BABYLON.PhysicsImpostor.SphereImpostor, { mass: 0.1, restitution: 0 }, scene);
+            shootedball.physicsImpostor.physicsBody.collisionFilterGroup = 2
+            shootedball.physicsImpostor.registerOnPhysicsCollide(getWallsImposters(scene),function(sball,walls){
+                scene.removeMesh(sball.object)
+                sball.object.dispose()
+        })
+    
+            translate(shootedball,targetPoint, 5);
+    
+            setTimeout(() => {
+                shootedball.dispose();
+              }, 3000);
+            
+        }
+    }
+    scene.onPointerUp = (e) => {
+        if (e.button === right) {
+                
+        }
+        if (e.button === left) {
+            //azfahweg
+        }
+    }
+    */
+
+    return scene;
 }
 
 var translate = function (mesh, direction, power) {
@@ -161,72 +255,78 @@ var translate = function (mesh, direction, power) {
     );
 }
 
-function getWallsImposters(scene){
-   return [scene.getMeshByName("up").physicsImpostor,scene.getMeshByName("down").physicsImpostor,scene.getMeshByName("right").physicsImpostor,scene.getMeshByName("left").physicsImpostor]
+function getWallsImposters(scene) {
+    return [scene.getMeshByName("up").physicsImpostor, //scene.getMeshByName("down").physicsImpostor,scene.getMeshByName("right").physicsImpostor
+        , scene.getMeshByName("left").physicsImpostor]
 }
 
-function addWallPhysics(scene){
-    var up = scene.getMeshByName("up")
-    up.physicsImpostor = new BABYLON.PhysicsImpostor(up, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.0, restitution: 0.7 }, scene);
-    up.physicsImpostor.physicsBody.collisionFilterMask = 1 | 2
-
-    var down = scene.getMeshByName("down")
-    down.physicsImpostor = new BABYLON.PhysicsImpostor(down, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.0, restitution: 0.7 }, scene);
-    down.physicsImpostor.physicsBody.collisionFilterMask = 1 | 2
-
-    var right = scene.getMeshByName("right")
-    right.physicsImpostor = new BABYLON.PhysicsImpostor(right, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.0, restitution: 0.7 }, scene);
-    right.physicsImpostor.physicsBody.collisionFilterMask = 1 | 2
-
-    var left = scene.getMeshByName("left")
-    left.physicsImpostor = new BABYLON.PhysicsImpostor(left, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.0, restitution: 0.7 }, scene);
-    left.physicsImpostor.physicsBody.collisionFilterMask = 1 | 2
-
+function addObstaclesPhysics(obstacles,tank,scene) {
+    for(let i = 0;i<obstacles.length;i++){
+    obstacles[i].physicsImpostor = new BABYLON.PhysicsImpostor(obstacles[i], BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.0, restitution: 0.7 }, scene);
+    obstacles[i].physicsImpostor.registerOnPhysicsCollide(tank.physicsImpostor,function(){
+        jumping = true;
+        jumpingstarted=0;
+    })
+    }
 }
 
-function createWalls(len,width,height, scene) {
+function createObstaclesLVL1(scene) {
+    var obst = []
     // Create the outer wall using a Cylinder mesh
-    var right = new BABYLON.MeshBuilder.CreateBox("right", {height:height, depth:len, width:10}, scene);
+    var obj;
+    obj = new BABYLON.MeshBuilder.CreateBox("", { height: 100, depth: 100, width:  300}, scene);
+    obj.position.y = -50;
+    obj.position.x = -650;
+    obst.push(obj)
+
+    obj = new BABYLON.MeshBuilder.CreateBox("", { height: 180, depth: 100, width:  200}, scene);
+    obj.position.y = -50;
+    obj.position.x = -350;
+    obst.push(obj)
+
+    obj = new BABYLON.MeshBuilder.CreateBox("", { height: 10, depth: 50, width:  60}, scene);
+    obj.position.y =  60;
+    obj.position.x = -250;
+    obst.push(obj)
+
+
+    /*var right = new BABYLON.MeshBuilder.CreateBox("right", {height:height, depth:len, width:10}, scene);
     right.position.x=len/2-5
-    var left = new BABYLON.MeshBuilder.CreateBox("left", {height:height, depth:len, width:10}, scene);
-    left.position.x=-len/2+5
+    
+    var left = new BABYLON.MeshBuilder.CreateBox("left", { height: height, depth: len, width: 10 }, scene);
+    left.position.x = 200
 
-    var up = new BABYLON.MeshBuilder.CreateBox("up", {height:height, depth:10, width:width-20}, scene);
-    up.position.z=width/2-5
+    var up = new BABYLON.MeshBuilder.CreateBox("up", { height: height, depth: 10, width: width - 20 }, scene);
+    up.position.z = width / 2 - 5
 
-    var bottom = new BABYLON.MeshBuilder.CreateBox("down", {height:height, depth:10, width:width-20}, scene);
-    bottom.position.z=-width/2+5
-    return [right,left,up,bottom];
+    /*var bottom = new BABYLON.MeshBuilder.CreateBox("down", { height: height, depth: 10, width: width - 20 }, scene);
+    bottom.position.z = -width / 2 + 5
+    */
+    return obst;
 }
 
 function createGround(scene) {
     //const groundOptions = { width:200, height:200, subdivisions:20, minHeight:0, maxHeight:50, onReady: onGroundCreated};
     //scene is optional and defaults to the current scene
     //const ground = BABYLON.MeshBuilder.CreateGroundFromHeightMap("gdhm", 'images/lvl1.png', groundOptions, scene); 
-    var ground = BABYLON.MeshBuilder.CreateGround("Ground", {width: 200, height: 200}, scene);
-    
-        const groundMaterial = new BABYLON.GridMaterial("groundMaterial", scene);
-        //groundMaterial.diffuseTexture = new BABYLON.Texture("images/grass.jpg");
-        ground.material = groundMaterial;
+    var ground = BABYLON.MeshBuilder.CreateBox("Ground", { depth:100,width: 1600, height: 50 }, scene);
+    ground.position.y = -100;
 
-        var walls = createWalls(200,200,100,scene)
-        for(let i = 0;i<walls.length;i++){
-            walls[i].material = groundMaterial;
-        }
-
-        // to be taken into account by collision detection
-        ground.checkCollisions = true;
+    // to be taken into account by collision detection
+    ground.checkCollisions = true;
     return ground;
 }
 
 function createLights(scene) {
     // i.e sun light with all light rays parallels, the vector is the direction.
-    let light0 = new BABYLON.DirectionalLight("dir0", new BABYLON.Vector3(-1, -1, 0), scene);
+    let light0 = new BABYLON.HemisphericLight("dir0", new BABYLON.Vector3(1, 8, -10), scene);
+    light0.intensity = 1;
+
 
 }
 
 function createFreeCamera(scene) {
-    let camera = new BABYLON.FreeCamera("myCamera", new BABYLON.Vector3(0, 300, -10), scene);
+    let camera = new BABYLON.FreeCamera("myCamera", new BABYLON.Vector3(-80, 0, -100), scene);
     // This targets the camera to scene origin
     camera.setTarget(BABYLON.Vector3.Zero());
 
@@ -236,86 +336,55 @@ function createFreeCamera(scene) {
 function createFollowCamera(scene, target) {
     let camera = new BABYLON.FollowCamera("tankFollowCamera", target.position, scene, target);
 
-    camera.radius = 40; // how far from the object to follow
-	camera.heightOffset = 14; // how high above the object to place the camera
-	camera.rotationOffset = 180; // the viewing angle
-	camera.cameraAcceleration = .1; // how fast to move
-	camera.maxCameraSpeed = 5; // speed limit
+    camera.radius = 100; // how far from the object to follow
+    camera.heightOffset = 10; // how high above the object to place the camera
+    camera.rotationOffset = 90; // the viewing angle
+    camera.cameraAcceleration = .1; // how fast to move
+    camera.maxCameraSpeed = 5; // speed limit
 
     return camera;
 }
 
 let zMovement = 5;
-function createTank(scene) {
-    let tank = new BABYLON.MeshBuilder.CreateBox("heroTank", {height:5, depth:6, width:10}, scene);
-    let tankhead = new BABYLON.MeshBuilder.CreateBox("heroTank", {height:10, depth:5, width:6}, scene);
+function createTank(scene, camera) {
+    let tank = new BABYLON.MeshBuilder.CreateBox("heroTank", { height: 10, depth: 5, width: 6 }, scene);
+    tank.position.x = -750;
+    let tankhead = new BABYLON.MeshBuilder.CreateBox("heroTank", { height: 5, depth: 6, width: 10 }, scene);
     tankhead.parent = tank; //1
+    tank.lookAt(new BABYLON.Vector3(10, 0, 0));
+
 
     let tankMaterial = new BABYLON.StandardMaterial("tankMaterial", scene);
-    tankMaterial.diffuseColor = new BABYLON.Color3.Red;
+    tankMaterial.diffuseColor = new BABYLON.Color3(255,0,0);
     //tankMaterial.emissiveColor = new BABYLON.Color3.Blue;
     tank.material = tankMaterial;
 
     let gunmaterial = new BABYLON.StandardMaterial("gunMaterial", scene);
-    gunmaterial.diffuseColor = new BABYLON.Color3.Yellow;
+    gunmaterial.diffuseColor = new BABYLON.Color3(255,0,0);
     //gunmaterial.emissiveColor = new BABYLON.Color3.Blue;
     tankhead.material = gunmaterial;
 
     // By default the box/tank is in 0, 0, 0, let's change that...
-    tank.position.y = 0.6;
+    //tank.position.y = 0.6;
+    //tankhead.position.x = -950;
+
     tankhead.position.y = 0.6;
 
-    tank.speed = 1;
+
+    tank.speed = 2;
     tank.frontVector = new BABYLON.Vector3(0, 0, 1);
-
-    tank.move = () => {
-                //tank.position.z += -1; // speed should be in unit/s, and depends on
-                                 // deltaTime !
-
-        // if we want to move while taking into account collision detections
-        // collision uses by default "ellipsoids"
-
-        let yMovement = 0;
-       
-        if (tank.position.y > 2) {
-            zMovement = 0;
-            yMovement = -2;
-        } 
-        //tank.moveWithCollisions(new BABYLON.Vector3(0, yMovement, zMovement));
-
-        if(inputStates.up) {
-            tank.moveWithCollisions(new BABYLON.Vector3(0, 0, 1*tank.speed));
-            //tank.moveWithCollisions(tank.frontVector.multiplyByFloats(tank.speed, tank.speed, tank.speed));
-        }    
-        if(inputStates.down) {
-            tank.moveWithCollisions(new BABYLON.Vector3(0, 0, -1*tank.speed));
-            //tank.moveWithCollisions(tank.frontVector.multiplyByFloats(-tank.speed, -tank.speed, -tank.speed));
-
-        }    
-        if(inputStates.left) {
-            tank.moveWithCollisions(new BABYLON.Vector3(-1*tank.speed, 0, 0));
-            //tank.rotation.y -= 0.02;
-            //tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
-        }    
-        if(inputStates.right) {
-            tank.moveWithCollisions(new BABYLON.Vector3(1*tank.speed, 0, 0));
-            //tank.rotation.y += 0.02;
-            //tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
-        }
-
-    }
 
     return tank;
 }
 
 function createHeroDude(scene) {
-   // load the Dude 3D animated model
+    // load the Dude 3D animated model
     // name, folder, skeleton name 
-    BABYLON.SceneLoader.ImportMesh("him", "models/Dude/", "Dude.babylon", scene,  (newMeshes, particleSystems, skeletons) => {
+    BABYLON.SceneLoader.ImportMesh("him", "models/Dude/", "Dude.babylon", scene, (newMeshes, particleSystems, skeletons) => {
         let heroDude = newMeshes[0];
         heroDude.position = new BABYLON.Vector3(0, 0, 5);  // The original dude
         // make it smaller 
-        heroDude.scaling = new BABYLON.Vector3(0.2  , 0.2, 0.2);
+        heroDude.scaling = new BABYLON.Vector3(0.2, 0.2, 0.2);
         //heroDude.speed = 0.1;
 
         // give it a name so that we can query the scene to get it by name
@@ -331,7 +400,7 @@ function createHeroDude(scene) {
 
         // make clones
         scene.dudes = [];
-        for(let i = 0; i < 10; i++) {
+        for (let i = 0; i < 10; i++) {
             scene.dudes[i] = doClone(heroDude, skeletons, i);
             scene.beginAnimation(scene.dudes[i].skeleton, 0, 120, true, 1);
 
@@ -341,7 +410,7 @@ function createHeroDude(scene) {
             // and the meshes have a property "Dude" that IS the instance
             // see render loop then....
         }
-         
+
 
     });
 }
@@ -349,32 +418,32 @@ function createHeroDude(scene) {
 
 function doClone(originalMesh, skeletons, id) {
     let myClone;
-    let xrand = Math.floor(Math.random()*500 - 250);
-    let zrand = Math.floor(Math.random()*500 - 250);
+    let xrand = Math.floor(Math.random() * 500 - 250);
+    let zrand = Math.floor(Math.random() * 500 - 250);
 
     myClone = originalMesh.clone("clone_" + id);
     myClone.position = new BABYLON.Vector3(xrand, 0, zrand);
 
-    if(!skeletons) return myClone;
+    if (!skeletons) return myClone;
 
     // The mesh has at least one skeleton
-    if(!originalMesh.getChildren()) {
+    if (!originalMesh.getChildren()) {
         myClone.skeleton = skeletons[0].clone("clone_" + id + "_skeleton");
         return myClone;
     } else {
-        if(skeletons.length === 1) {
+        if (skeletons.length === 1) {
             // the skeleton controls/animates all children, like in the Dude model
             let clonedSkeleton = skeletons[0].clone("clone_" + id + "_skeleton");
             myClone.skeleton = clonedSkeleton;
             let nbChildren = myClone.getChildren().length;
 
-            for(let i = 0; i < nbChildren;  i++) {
+            for (let i = 0; i < nbChildren; i++) {
                 myClone.getChildren()[i].skeleton = clonedSkeleton
             }
             return myClone;
-        } else if(skeletons.length === originalMesh.getChildren().length) {
+        } else if (skeletons.length === originalMesh.getChildren().length) {
             // each child has its own skeleton
-            for(let i = 0; i < myClone.getChildren().length;  i++) {
+            for (let i = 0; i < myClone.getChildren().length; i++) {
                 myClone.getChildren()[i].skeleton = skeletons[i].clone("clone_" + id + "_skeleton_" + i);
             }
             return myClone;
@@ -417,34 +486,36 @@ function modifySettings() {
     inputStates.up = false;
     inputStates.down = false;
     inputStates.space = false;
-    
+
     //add the listener to the main, window object, and update the states
     window.addEventListener('keydown', (event) => {
-        if ((event.key === "ArrowLeft") || (event.key === "q")|| (event.key === "Q")) {
-           inputStates.left = true;
-        } else if ((event.key === "ArrowUp") || (event.key === "z")|| (event.key === "Z")){
-           inputStates.up = true;
-        } else if ((event.key === "ArrowRight") || (event.key === "d")|| (event.key === "D")){
-           inputStates.right = true;
-        } else if ((event.key === "ArrowDown")|| (event.key === "s")|| (event.key === "S")) {
-           inputStates.down = true;
-        }  else if (event.key === " ") {
-           inputStates.space = true;
+        if ((event.key === "ArrowLeft") || (event.key === "q") || (event.key === "Q")) {
+            inputStates.left = true;
+        } else if ((event.key === "ArrowUp") || (event.key === "z") || (event.key === "Z")) {
+            inputStates.up = true;
+        } else if ((event.key === "ArrowRight") || (event.key === "d") || (event.key === "D")) {
+            inputStates.right = true;
+        } else if ((event.key === "ArrowDown") || (event.key === "s") || (event.key === "S")) {
+            inputStates.down = true;
+        } else if (event.key === " ") {
+            inputStates.space = true;
         }
     }, false);
 
     //if the key will be released, change the states object 
     window.addEventListener('keyup', (event) => {
-        if ((event.key === "ArrowLeft") || (event.key === "q")|| (event.key === "Q")) {
-           inputStates.left = false;
-        } else if ((event.key === "ArrowUp") || (event.key === "z")|| (event.key === "Z")){
-           inputStates.up = false;
-        } else if ((event.key === "ArrowRight") || (event.key === "d")|| (event.key === "D")){
-           inputStates.right = false;
-        } else if ((event.key === "ArrowDown")|| (event.key === "s")|| (event.key === "S")) {
-           inputStates.down = false;
-        }  else if (event.key === " ") {
-           inputStates.space = false;
+        if ((event.key === "ArrowLeft") || (event.key === "q") || (event.key === "Q")) {
+            inputStates.left = false;
+        } else if ((event.key === "ArrowUp") || (event.key === "z") || (event.key === "Z")) {
+            jumpingstarted=30;
+
+            inputStates.up = false;
+        } else if ((event.key === "ArrowRight") || (event.key === "d") || (event.key === "D")) {
+            inputStates.right = false;
+        } else if ((event.key === "ArrowDown") || (event.key === "s") || (event.key === "S")) {
+            inputStates.down = false;
+        } else if (event.key === " ") {
+            inputStates.space = false;
         }
     }, false);
 }
