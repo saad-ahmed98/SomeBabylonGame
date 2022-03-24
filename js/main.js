@@ -25,37 +25,37 @@ function configureAssetManager(scene) {
     console.log("ici")
     // useful for storing references to assets as properties. i.e scene.assets.cannonsound, etc.
     scene.assets = {};
-  
+
     let assetsManager = new BABYLON.AssetsManager(scene);
-  
+
     assetsManager.onProgress = function (
-      remainingCount,
-      totalCount,
-      lastFinishedTask
+        remainingCount,
+        totalCount,
+        lastFinishedTask
     ) {
-      engine.loadingUIText =
-        "We are loading the scene. " +
-        remainingCount +
-        " out of " +
-        totalCount +
-        " items still need to be loaded.";
-      console.log(
-        "We are loading the scene. " +
-          remainingCount +
-          " out of " +
-          totalCount +
-          " items still need to be loaded."
-      );
+        engine.loadingUIText =
+            "We are loading the scene. " +
+            remainingCount +
+            " out of " +
+            totalCount +
+            " items still need to be loaded.";
+        console.log(
+            "We are loading the scene. " +
+            remainingCount +
+            " out of " +
+            totalCount +
+            " items still need to be loaded."
+        );
     };
-  
+
     assetsManager.onFinish = function (tasks) {
-      engine.runRenderLoop(function () {
-        scene.toRender();
-      });
+        engine.runRenderLoop(function () {
+            scene.toRender();
+        });
     };
-  
+
     return assetsManager;
-  }
+}
 
 function startGame() {
     canvas = document.querySelector("#myCanvas");
@@ -85,25 +85,26 @@ function startGame() {
 function loadSounds(scene) {
     var assetsManager = scene.assetsManager;
     var binaryTask = assetsManager.addBinaryFileTask(
-      "swordSwing",
-      "sounds/sword swing.wav"
+        "swordSwing",
+        "sounds/sword swing.wav"
     );
     binaryTask.onSuccess = function (task) {
-      scene.assets.swordSwingSound = new BABYLON.Sound(
-        "swordSwing",
-        task.data,
-        scene,
-        null,
-        { loop: false,
-         }
-      );
+        scene.assets.swordSwingSound = new BABYLON.Sound(
+            "swordSwing",
+            task.data,
+            scene,
+            null,
+            {
+                loop: false,
+            }
+        );
     };
-  }
+}
 
-function swingSword(scene,tank) {
+function swingSword(scene, tank) {
     scene.assets.swordSwingSound.setPosition(tank.position);
     scene.assets.swordSwingSound.play();
-    
+
     isattacking = false;
 }
 
@@ -131,7 +132,36 @@ function createScene() {
 
 
 
+    BABYLON.SceneLoader.ImportMesh("", "models/", "character.glb", scene, function (meshes, skeletons) {
+        for (let i = 0; i < meshes.length; i++) {
+            meshes[i].name = "bg" + i;
+            meshes[i].parent = tank;
+            meshes[i].position.x = 0;
+            meshes[i].position.z = 0;
+            meshes[i].position.y = -5;
 
+
+            meshes[i].scaling.x = 5;
+            meshes[i].scaling.z = 5;
+            meshes[i].scaling.y = 5;
+            meshes[i]._scene.animationGroups[2].play(true)
+            tank.animationGroups = meshes[i]._scene.animationGroups
+        }
+        let hand =meshes[0].getChildren()[0].getChildren()[3].getChildren()[0].getChildren()[0].getChildren()[0].getChildren()[0].getChildren()[1].getChildren()[0].getChildren()[0].getChildren()[0].getChildren()[0]
+        BABYLON.SceneLoader.ImportMesh("Plane", "models/", "cartoonSword.glb", scene, function (meshes, particleSystems, skeletons) {
+                meshes[0].name = "sword";
+                meshes[0].parent = hand;
+                //meshes[i].position.x = 6;
+                //meshes[0].position.z = -5;
+    
+                meshes[0].scaling.x = 0.2;
+                meshes[0].scaling.z = 0.2;
+                meshes[0].scaling.y = 0.2;
+    
+                //meshes[0].rotation = new BABYLON.Vector3(0, 0, 20);
+        });
+    });
+    /*
     BABYLON.SceneLoader.ImportMesh("Plane", "models/", "cartoonSword.glb", scene, function (meshes, particleSystems, skeletons) {
         for (let i = 0; i < meshes.length; i++) {
             meshes[i].name = "sword" + i;
@@ -146,6 +176,8 @@ function createScene() {
             meshes[i].rotation = new BABYLON.Vector3(0, 20, -5);
         }
     });
+    */
+
 
     var obstacles = createObstaclesLVL1(scene);
     var pickups = createPickupsLVL1(scene);
@@ -191,70 +223,95 @@ function createScene() {
     })
 
     tank.move = () => {
-        wavePickups(pickups);
-        contactPickups(pickups,tank);
+        if (tank.animationGroups != undefined) {
 
-        if (inputStates.space) {
-            if (walljumpingleft && walljump < 25 && haswalljump) {
-                if(walljump<15)
-                inputStates.right = false;
-                tank.moveWithCollisions(new BABYLON.Vector3(-0.7 * tank.speed, 0, 0));
-                tank.moveWithCollisions(new BABYLON.Vector3(0, 2 * tank.speed, 0));
+            let idle = true;
+            wavePickups(pickups);
+            contactPickups(pickups, tank);
+            if (tank.animationGroups[5]._isStarted == false)
+                isattacking = false;
+
+            if (inputStates.space) {
+                idle = false
+                if (walljumpingleft && walljump < 25 && haswalljump) {
+                    if (walljump < 15)
+                        inputStates.right = false;
+                    tank.moveWithCollisions(new BABYLON.Vector3(-0.7 * tank.speed, 0, 0));
+                    tank.moveWithCollisions(new BABYLON.Vector3(0, 2 * tank.speed, 0));
+                    tank.lookAt(new BABYLON.Vector3(-10000000, 0, 0));
+                    followCamera.rotationOffset = -90
+                    lookAt = -1
+                    walljump++;
+
+                }
+                else {
+                    if (walljumpingright && walljump < 25 && haswalljump) {
+                        if (walljump < 15)
+                            inputStates.left = false;
+                        tank.moveWithCollisions(new BABYLON.Vector3(0.7 * tank.speed, 0, 0));
+                        tank.moveWithCollisions(new BABYLON.Vector3(0, 2 * tank.speed, 0));
+                        tank.lookAt(new BABYLON.Vector3(10000000, 0, 0));
+                        followCamera.rotationOffset = 90
+                        lookAt = 1
+                        walljump++;
+                    }
+                    else {
+                        if (jumping || jumpingstarted < 30) {
+                            tank.moveWithCollisions(new BABYLON.Vector3(0, 1.2 * tank.speed, 0));
+                            tank.lookAt(new BABYLON.Vector3(lookAt * 10000000, 0, 0));
+                            jumpingstarted++
+                            jumping = false;
+                        }
+                    }
+                }
+                tank.animationGroups[1].play()
+            }
+            if (inputStates.up) {
+            }
+            if (inputStates.down) {
+
+            }
+            if (inputStates.left) {
+                idle = false
+
+                tank.moveWithCollisions(new BABYLON.Vector3(-1 * tank.speed, 0, 0));
                 tank.lookAt(new BABYLON.Vector3(-10000000, 0, 0));
                 followCamera.rotationOffset = -90
                 lookAt = -1
-                walljump++;
+                if (jumping && !isattacking)
+                    tank.animationGroups[4].play()
+            }
+            if (inputStates.right) {
+                idle = false
+
+                tank.moveWithCollisions(new BABYLON.Vector3(1 * tank.speed, 0, 0));
+                tank.lookAt(new BABYLON.Vector3(10000000, 0, 0));
+                followCamera.rotationOffset = 90
+                lookAt = 1
+                if (jumping && !isattacking)
+                    tank.animationGroups[4].play()
 
             }
-            else {
-                if (walljumpingright && walljump < 25 && haswalljump) {
-                    if(walljump<15)
-                    inputStates.left = false;
-                    tank.moveWithCollisions(new BABYLON.Vector3(0.7 * tank.speed, 0, 0));
-                    tank.moveWithCollisions(new BABYLON.Vector3(0, 2 * tank.speed, 0));
-                    tank.lookAt(new BABYLON.Vector3(10000000, 0, 0));
-                    followCamera.rotationOffset = 90
-                    lookAt = 1
-                    walljump++;
+
+            if (inputStates.attack) {
+                idle = false
+                if (!isattacking) {
+                    isattacking = true;
+                    tank.animationGroups[5].play()
+                    //swingSword(scene,tank)
                 }
-                else {
-                    if (jumping || jumpingstarted < 30) {
-                        tank.moveWithCollisions(new BABYLON.Vector3(0, 1.2 * tank.speed, 0));
-                        tank.lookAt(new BABYLON.Vector3(lookAt * 10000000, 0, 0));
-                        jumpingstarted++
-                        jumping = false;
-                    }
+            }
+
+            if (idle && walljump && jumping) {
+                for (let i = 0; i < tank.animationGroups; i++) {
+                    tank.animationGroups[i].stop()
                 }
-            }
-
-        }
-        if (inputStates.up) {
-        }
-        if (inputStates.down) {
-
-        }
-        if (inputStates.left) {
-            tank.moveWithCollisions(new BABYLON.Vector3(-1 * tank.speed, 0, 0));
-            tank.lookAt(new BABYLON.Vector3(-10000000, 0, 0));
-            followCamera.rotationOffset = -90
-            lookAt = -1
-
-        }
-        if (inputStates.right) {
-            tank.moveWithCollisions(new BABYLON.Vector3(1 * tank.speed, 0, 0));
-            tank.lookAt(new BABYLON.Vector3(10000000, 0, 0));
-            followCamera.rotationOffset = 90
-            lookAt = 1
-        }
-
-        if (inputStates.attack) {
-            if(!isattacking){
-                isattacking = true;
-                swingSword(scene,tank)
+                tank.animationGroups[2].play(true)
             }
         }
-
     }
+
+
 
 
     /*
@@ -328,28 +385,30 @@ var translate = function (mesh, direction, power) {
 
 */
 
-function wavePickups(pickups){
-    for(let i = 0;i<pickups.length;i++){
-        pickups[i].mesh.position.y = pickups[i].mesh.position.y+(0.2*pickups[i].direction);
-        if(pickups[i].mesh.position.y>pickups[i].originaly+pickups[i].offset)
+
+
+function wavePickups(pickups) {
+    for (let i = 0; i < pickups.length; i++) {
+        pickups[i].mesh.position.y = pickups[i].mesh.position.y + (0.2 * pickups[i].direction);
+        if (pickups[i].mesh.position.y > pickups[i].originaly + pickups[i].offset)
             pickups[i].direction = -1;
-        
-        if(pickups[i].mesh.position.y<pickups[i].originaly-pickups[i].offset)
+
+        if (pickups[i].mesh.position.y < pickups[i].originaly - pickups[i].offset)
             pickups[i].direction = 1;
     }
 }
 
-function contactPickups(pickups,tank){
+function contactPickups(pickups, tank) {
 
-    for(let i = 0;i<pickups.length;i++){
-        if(!pickups[i].dead){
-        if(Math.abs(pickups[i].mesh.position.x -tank.position.x) <=5 && Math.abs(pickups[i].mesh.position.y -tank.position.y)<=5){
-            console.log("WALL JUMP OBTAINED");
-            haswalljump = true;
-            pickups[i].mesh.dispose();
-            pickups[i].dead = true;
+    for (let i = 0; i < pickups.length; i++) {
+        if (!pickups[i].dead) {
+            if (Math.abs(pickups[i].mesh.position.x - tank.position.x) <= 5 && Math.abs(pickups[i].mesh.position.y - tank.position.y) <= 5) {
+                console.log("WALL JUMP OBTAINED");
+                haswalljump = true;
+                pickups[i].mesh.dispose();
+                pickups[i].dead = true;
+            }
         }
-    }
 
     }
 }
@@ -386,17 +445,17 @@ function addObstaclesPhysics(obstacles, tank, scene) {
 function createPickupsLVL1(scene) {
     var pickups = [];
 
-    var obj = new BABYLON.Mesh.CreateDisc("", 5,64, scene);
+    var obj = new BABYLON.Mesh.CreateDisc("", 5, 64, scene);
     var objmat = new BABYLON.StandardMaterial("", scene);
     objmat.diffuseTexture = new BABYLON.Texture("images/walljump.png", scene);
     obj.material = objmat;
     obj.position.y = 12;
     obj.position.x = 500;
 
-    var pickup = new Pickup (obj.position.y,2,obj)
+    var pickup = new Pickup(obj.position.y, 2, obj)
     pickups.push(pickup);
 
-    var particleSystem = new BABYLON.ParticleSystem("particles", 2000,scene);
+    var particleSystem = new BABYLON.ParticleSystem("particles", 2000, scene);
     particleSystem.maxScaleX = 2;
     particleSystem.maxScaleY = 2;
 
@@ -499,7 +558,7 @@ function createGround(scene) {
     return ground;
 }
 
-function createEndLevel(scene){
+function createEndLevel(scene) {
     /*
     var obj = new BABYLON.MeshBuilder.CreateBox("", { height: 10, depth: 10, width: 5 }, scene);
     obj.position.y = 105;
@@ -560,9 +619,8 @@ function createFollowCamera(scene, target) {
 function createTank(scene, camera) {
     let tank = new BABYLON.MeshBuilder.CreateBox("heroTank", { height: 10, depth: 5, width: 6 }, scene);
     tank.position.x = -750;
-    let tankhead = new BABYLON.MeshBuilder.CreateBox("heroTank", { height: 5, depth: 6, width: 10 }, scene);
-    tankhead.parent = tank; //1
     tank.lookAt(new BABYLON.Vector3(10, 0, 0));
+    tank.visibility = 0;
 
 
     let tankMaterial = new BABYLON.StandardMaterial("tankMaterial", scene);
@@ -571,9 +629,7 @@ function createTank(scene, camera) {
 
     let gunmaterial = new BABYLON.StandardMaterial("gunMaterial", scene);
     gunmaterial.diffuseColor = new BABYLON.Color3(255, 0, 0);
-    tankhead.material = gunmaterial;
 
-    tankhead.position.y = 0.6;
 
 
     tank.speed = 2;
