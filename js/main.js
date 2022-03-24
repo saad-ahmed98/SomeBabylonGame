@@ -5,6 +5,7 @@ import Pickup from "./Pickup.js";
 let canvas;
 let engine;
 let scene;
+let show=0;
 // vars for handling inputs
 let inputStates = {};
 let jumping = true;
@@ -16,6 +17,7 @@ var walljump = 0;
 var haswalljump = false;
 var isattacking = false;
 var poswalljumping = 0;
+var goToMenu;
 
 
 
@@ -60,27 +62,100 @@ function configureAssetManager(scene) {
 function startGame() {
     canvas = document.querySelector("#myCanvas");
     engine = new BABYLON.Engine(canvas, true);
-    scene = createScene();
+    scene = createScene(show);
 
+    
     // modify some default settings (i.e pointer events to prevent cursor to go 
     // out of the game window)
     modifySettings();
+    
+        Ammo().then(() => {
+            if(show==0){
+            canvas = document.querySelector("#myCanvas");
+            engine = new BABYLON.Engine(canvas, true);
+            scene = createScene(show);
+            
+        
+            // modify some default settings (i.e pointer events to prevent cursor to go 
+            // out of the game window)
+        
+           
+        
+            engine.runRenderLoop(() => {
+                let deltaTime = engine.getDeltaTime(); // remind you something ?
+                
+                scene.render();
+            });
+            }else{
+                console.log("test")
+                let tank = scene.getMeshByName("heroTank");
+                tank.move();
+                scene.toRender = () => {
+                    let deltaTime = engine.getDeltaTime(); // remind you something ?
+            
+                    tank.move();
+                    //tank.lookAt(new BABYLON.Vector3(lookAt*10000000, tank.position.y, 0));
+                    //console.log("ici")
+            
+            
+                    scene.render();
+                };
+                scene.assetsManager.load();
+                scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
+                var physicsEngine = scene.getPhysicsEngine();
+                physicsEngine.setGravity(new BABYLON.Vector3(0, -200, 0));
+        
+        
+        
+                // Add Imposters
+                tank.physicsImpostor = new BABYLON.PhysicsImpostor(tank, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 2, restitution: 0 }, scene);
+        
+                tank.position.y = 20
 
-    let tank = scene.getMeshByName("heroTank");
+                ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.1 }, scene);
+                ground.physicsImpostor.registerOnPhysicsCollide(tank.physicsImpostor, function () {
+                    console.log("GAME OVER")
+                })
+        
+                addObstaclesPhysics(obstacles, tank, scene)
+        
+                createLights(scene);
 
-    scene.toRender = () => {
-        let deltaTime = engine.getDeltaTime(); // remind you something ?
+            }
+        })
+           
+    
+    
+            /*window.addEventListener("mousemove", function () {
+                // We try to pick an object
+                var pickResult = scene.pick(scene.pointerX, scene.pointerY);
+                if (pickResult.hit) {
+                    var targetPoint = pickResult.pickedPoint;
+                    targetPoint.y = tank.position.y;
+                    tank.lookAt(targetPoint);
+                }
+            });
+            */
+        let tank = scene.getMeshByName("heroTank");
 
-        tank.move();
-        //tank.lookAt(new BABYLON.Vector3(lookAt*10000000, tank.position.y, 0));
-        //console.log("ici")
+        scene.toRender = () => {
+            let deltaTime = engine.getDeltaTime(); // remind you something ?
+    
+            tank.move();
+            //tank.lookAt(new BABYLON.Vector3(lookAt*10000000, tank.position.y, 0));
+            //console.log("ici")
+    
+    
+            scene.render();
+        };
+        //scene.assetsManager.load();
+
+    }
+   
+    
 
 
-        scene.render();
-    };
-    scene.assetsManager.load();
 
-}
 
 function loadSounds(scene) {
     var assetsManager = scene.assetsManager;
@@ -109,8 +184,40 @@ function swingSword(scene, tank) {
 }
 
 
-function createScene() {
-    let scene = new BABYLON.Scene(engine);
+function createScene(show) {
+    switch(show){
+    case(0):
+    var scene1 = new BABYLON.Scene(engine);
+            var camera1 = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene1);
+
+            // This targets the camera to scene origin
+            camera1.setTarget(BABYLON.Vector3.Zero());
+
+            // This attaches the camera to the canvas
+            camera1.attachControl(canvas, true);
+
+            // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+           
+
+            goToMenu = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
+            var button2 = BABYLON.GUI.Button.CreateSimpleButton("but1", "Go To Game");
+            button2.width = "150px"
+            button2.height = "40px";
+            button2.color = "white";
+            button2.cornerRadius = 20;
+            button2.background = "red";
+            button2.onPointerUpObservable.add(function() {
+                show=1;
+                scene = createScene(show);
+                button2.dispose();
+    
+            });
+
+            goToMenu.addControl(button2);
+            return scene1;
+    case(1):
+    
+    scene = new BABYLON.Scene(engine);
     let ground = createGround(scene);
     scene.assetsManager = configureAssetManager(scene);
 
@@ -189,38 +296,24 @@ function createScene() {
 
     let followCamera = createFollowCamera(scene, tank);
     scene.activeCamera = followCamera;
-    Ammo().then(() => {
-        scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
-        var physicsEngine = scene.getPhysicsEngine();
-        physicsEngine.setGravity(new BABYLON.Vector3(0, -200, 0));
+    scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
+    var physicsEngine = scene.getPhysicsEngine();
+    physicsEngine.setGravity(new BABYLON.Vector3(0, -200, 0));
 
 
 
-        // Add Imposters
-        tank.physicsImpostor = new BABYLON.PhysicsImpostor(tank, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 2, restitution: 0 }, scene);
+    // Add Imposters
+    tank.physicsImpostor = new BABYLON.PhysicsImpostor(tank, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 2, restitution: 0 }, scene);
 
-        tank.position.y = 20
-        ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.1 }, scene);
-        ground.physicsImpostor.registerOnPhysicsCollide(tank.physicsImpostor, function () {
-            console.log("GAME OVER")
-        })
-
-        addObstaclesPhysics(obstacles, tank, scene)
-
-        createLights(scene);
-
-
-        /*window.addEventListener("mousemove", function () {
-            // We try to pick an object
-            var pickResult = scene.pick(scene.pointerX, scene.pointerY);
-            if (pickResult.hit) {
-                var targetPoint = pickResult.pickedPoint;
-                targetPoint.y = tank.position.y;
-                tank.lookAt(targetPoint);
-            }
-        });
-        */
+    tank.position.y = 20
+    ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.1 }, scene);
+    ground.physicsImpostor.registerOnPhysicsCollide(tank.physicsImpostor, function () {
+        console.log("GAME OVER")
     })
+
+    addObstaclesPhysics(obstacles, tank, scene)
+
+    createLights(scene);
 
     tank.move = () => {
         if (tank.animationGroups != undefined) {
@@ -308,6 +401,7 @@ function createScene() {
                 }
                 tank.animationGroups[2].play(true)
             }
+            
         }
     }
 
@@ -374,6 +468,7 @@ function createScene() {
 
 
     return scene;
+    }
 }
 /*
 var translate = function (mesh, direction, power) {
