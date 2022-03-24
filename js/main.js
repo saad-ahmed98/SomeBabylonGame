@@ -1,4 +1,3 @@
-import Dude from "./Dude.js";
 import Obstacle from "./Obstacle.js";
 import Pickup from "./Pickup.js";
 
@@ -13,12 +12,50 @@ let jumpingstarted = 0
 var lookAt = 1;
 var walljumpingleft = false;
 var walljumpingright = false;
-var poswalljumping = 0;
 var walljump = 0;
 var haswalljump = false;
+var isattacking = false;
+var poswalljumping = 0;
+
 
 
 window.onload = startGame;
+
+function configureAssetManager(scene) {
+    console.log("ici")
+    // useful for storing references to assets as properties. i.e scene.assets.cannonsound, etc.
+    scene.assets = {};
+  
+    let assetsManager = new BABYLON.AssetsManager(scene);
+  
+    assetsManager.onProgress = function (
+      remainingCount,
+      totalCount,
+      lastFinishedTask
+    ) {
+      engine.loadingUIText =
+        "We are loading the scene. " +
+        remainingCount +
+        " out of " +
+        totalCount +
+        " items still need to be loaded.";
+      console.log(
+        "We are loading the scene. " +
+          remainingCount +
+          " out of " +
+          totalCount +
+          " items still need to be loaded."
+      );
+    };
+  
+    assetsManager.onFinish = function (tasks) {
+      engine.runRenderLoop(function () {
+        scene.toRender();
+      });
+    };
+  
+    return assetsManager;
+  }
 
 function startGame() {
     canvas = document.querySelector("#myCanvas");
@@ -31,7 +68,7 @@ function startGame() {
 
     let tank = scene.getMeshByName("heroTank");
 
-    engine.runRenderLoop(() => {
+    scene.toRender = () => {
         let deltaTime = engine.getDeltaTime(); // remind you something ?
 
         tank.move();
@@ -39,29 +76,47 @@ function startGame() {
         //console.log("ici")
 
 
-        let heroDude = scene.getMeshByName("heroDude");
-        if (heroDude)
-            heroDude.Dude.move(scene);
-
-        if (scene.dudes) {
-            for (var i = 0; i < scene.dudes.length; i++) {
-                scene.dudes[i].Dude.move(scene);
-            }
-        }
-
         scene.render();
-    });
+    };
+    scene.assetsManager.load();
+
+}
+
+function loadSounds(scene) {
+    var assetsManager = scene.assetsManager;
+    var binaryTask = assetsManager.addBinaryFileTask(
+      "swordSwing",
+      "sounds/sword swing.wav"
+    );
+    binaryTask.onSuccess = function (task) {
+      scene.assets.swordSwingSound = new BABYLON.Sound(
+        "swordSwing",
+        task.data,
+        scene,
+        null,
+        { loop: false,
+         }
+      );
+    };
+  }
+
+function swingSword(scene,tank) {
+    scene.assets.swordSwingSound.setPosition(tank.position);
+    scene.assets.swordSwingSound.play();
+    
+    isattacking = false;
 }
 
 
 function createScene() {
     let scene = new BABYLON.Scene(engine);
     let ground = createGround(scene);
+    scene.assetsManager = configureAssetManager(scene);
+
     const groundMaterial = new BABYLON.GridMaterial("groundMaterial", scene);
     //groundMaterial.diffuseTexture = new BABYLON.Texture("images/grass.jpg");
     ground.material = groundMaterial;
 
-    let freeCamera = createFreeCamera(scene);
     let tank = createTank(scene);
     //var layer = new BABYLON.Layer('','images/skybox.png', scene, true);
 
@@ -100,7 +155,6 @@ function createScene() {
         obstacles[i].mesh.material = groundMaterial;
     }
 
-    //BABYLON.SceneLoader.ImportMesh("", "models/", "RayGun.glb", scene, onGunImported);
     let followCamera = createFollowCamera(scene, tank);
     scene.activeCamera = followCamera;
     Ammo().then(() => {
@@ -120,14 +174,9 @@ function createScene() {
         })
 
         addObstaclesPhysics(obstacles, tank, scene)
-        //box.physicsImpostor = new BABYLON.PhysicsImpostor(box, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, friction: 0.0, restitution: 0.7 }, scene);
-
-        // second parameter is the target to follow
-        //scene.activeCamera = freeCamera;
 
         createLights(scene);
 
-        //createHeroDude(scene);
 
         /*window.addEventListener("mousemove", function () {
             // We try to pick an object
@@ -144,17 +193,6 @@ function createScene() {
     tank.move = () => {
         wavePickups(pickups);
         contactPickups(pickups,tank);
-        //tank.position.z += -1; // speed should be in unit/s, and depends on
-        // deltaTime !
-
-        // if we want to move while taking into account collision detections
-        // collision uses by default "ellipsoids"
-        /*if (tank.position.y > 2) {
-            zMovement = 0;
-            yMovement = -2;
-        } 
-        */
-        //tank.moveWithCollisions(new BABYLON.Vector3(0, yMovement, zMovement));
 
         if (inputStates.space) {
             if (walljumpingleft && walljump < 25 && haswalljump) {
@@ -191,18 +229,12 @@ function createScene() {
 
         }
         if (inputStates.up) {
-            //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, 1*tank.speed));
-            //tank.moveWithCollisions(tank.frontVector.multiplyByFloats(tank.speed, tank.speed, tank.speed));
         }
         if (inputStates.down) {
-            //tank.moveWithCollisions(new BABYLON.Vector3(0, 0, -1*tank.speed));
-            //tank.moveWithCollisions(tank.frontVector.multiplyByFloats(-tank.speed, -tank.speed, -tank.speed));
 
         }
         if (inputStates.left) {
             tank.moveWithCollisions(new BABYLON.Vector3(-1 * tank.speed, 0, 0));
-            //tank.rotation.y -= 0.02;
-            //tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
             tank.lookAt(new BABYLON.Vector3(-10000000, 0, 0));
             followCamera.rotationOffset = -90
             lookAt = -1
@@ -210,15 +242,17 @@ function createScene() {
         }
         if (inputStates.right) {
             tank.moveWithCollisions(new BABYLON.Vector3(1 * tank.speed, 0, 0));
-            //tank.rotation.y += 0.02
-            //tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
             tank.lookAt(new BABYLON.Vector3(10000000, 0, 0));
             followCamera.rotationOffset = 90
             lookAt = 1
         }
-        //tank.rotation.y += 0.02;
-        //tank.frontVector = new BABYLON.Vector3(Math.sin(tank.rotation.y), 0, Math.cos(tank.rotation.y));
-        //tank.lookAt(new BABYLON.Vector3(10000000, 0, 0));
+
+        if (inputStates.attack) {
+            if(!isattacking){
+                isattacking = true;
+                swingSword(scene,tank)
+            }
+        }
 
     }
 
@@ -279,6 +313,8 @@ function createScene() {
         }
     }
     */
+    loadSounds(scene);
+
 
     return scene;
 }
@@ -372,9 +408,7 @@ function createPickupsLVL1(scene) {
     noiseTexture.octaves = 2;
     particleSystem.noiseTexture = noiseTexture;
     particleSystem.noiseStrength = new BABYLON.Vector3(100, 100, 100);
-    //Texture of each particle
     particleSystem.particleTexture = new BABYLON.Texture("images/flare.png");
-    // Position where the particles are emiited from
     particleSystem.emitter = pickup.mesh;
     particleSystem.start();
 
@@ -459,19 +493,14 @@ function createObstaclesLVL1(scene) {
 }
 
 function createGround(scene) {
-    //const groundOptions = { width:200, height:200, subdivisions:20, minHeight:0, maxHeight:50, onReady: onGroundCreated};
-    //scene is optional and defaults to the current scene
-    //const ground = BABYLON.MeshBuilder.CreateGroundFromHeightMap("gdhm", 'images/lvl1.png', groundOptions, scene); 
     var ground = BABYLON.MeshBuilder.CreateBox("Ground", { depth: 100, width: 1600, height: 50 }, scene);
     ground.position.y = -100;
-
-    // to be taken into account by collision detection
     ground.checkCollisions = true;
     return ground;
 }
 
 function createEndLevel(scene){
-
+    /*
     var obj = new BABYLON.MeshBuilder.CreateBox("", { height: 10, depth: 10, width: 5 }, scene);
     obj.position.y = 105;
     obj.position.x = 630;
@@ -516,14 +545,6 @@ function createLights(scene) {
 
 }
 
-function createFreeCamera(scene) {
-    let camera = new BABYLON.FreeCamera("myCamera", new BABYLON.Vector3(-80, 0, -100), scene);
-    // This targets the camera to scene origin
-    camera.setTarget(BABYLON.Vector3.Zero());
-
-    return camera;
-}
-
 function createFollowCamera(scene, target) {
     let camera = new BABYLON.FollowCamera("tankFollowCamera", target.position, scene, target);
 
@@ -536,7 +557,6 @@ function createFollowCamera(scene, target) {
     return camera;
 }
 
-let zMovement = 5;
 function createTank(scene, camera) {
     let tank = new BABYLON.MeshBuilder.CreateBox("heroTank", { height: 10, depth: 5, width: 6 }, scene);
     tank.position.x = -750;
@@ -547,17 +567,11 @@ function createTank(scene, camera) {
 
     let tankMaterial = new BABYLON.StandardMaterial("tankMaterial", scene);
     tankMaterial.diffuseColor = new BABYLON.Color3(255, 0, 0);
-    //tankMaterial.emissiveColor = new BABYLON.Color3.Blue;
     tank.material = tankMaterial;
 
     let gunmaterial = new BABYLON.StandardMaterial("gunMaterial", scene);
     gunmaterial.diffuseColor = new BABYLON.Color3(255, 0, 0);
-    //gunmaterial.emissiveColor = new BABYLON.Color3.Blue;
     tankhead.material = gunmaterial;
-
-    // By default the box/tank is in 0, 0, 0, let's change that...
-    //tank.position.y = 0.6;
-    //tankhead.position.x = -950;
 
     tankhead.position.y = 0.6;
 
@@ -568,90 +582,14 @@ function createTank(scene, camera) {
     return tank;
 }
 
-function createHeroDude(scene) {
-    // load the Dude 3D animated model
-    // name, folder, skeleton name 
-    BABYLON.SceneLoader.ImportMesh("him", "models/Dude/", "Dude.babylon", scene, (newMeshes, particleSystems, skeletons) => {
-        let heroDude = newMeshes[0];
-        heroDude.position = new BABYLON.Vector3(0, 0, 5);  // The original dude
-        // make it smaller 
-        heroDude.scaling = new BABYLON.Vector3(0.2, 0.2, 0.2);
-        //heroDude.speed = 0.1;
-
-        // give it a name so that we can query the scene to get it by name
-        heroDude.name = "heroDude";
-
-        // there might be more than one skeleton in an imported animated model. Try console.log(skeletons.length)
-        // here we've got only 1. 
-        // animation parameters are skeleton, starting frame, ending frame,  a boolean that indicate if we're gonna 
-        // loop the animation, speed, 
-        let a = scene.beginAnimation(skeletons[0], 0, 120, true, 1);
-
-        let hero = new Dude(heroDude, 0.1, scene);
-
-        // make clones
-        scene.dudes = [];
-        for (let i = 0; i < 10; i++) {
-            scene.dudes[i] = doClone(heroDude, skeletons, i);
-            scene.beginAnimation(scene.dudes[i].skeleton, 0, 120, true, 1);
-
-            // Create instance with move method etc.
-            var temp = new Dude(scene.dudes[i], 0.3);
-            // remember that the instances are attached to the meshes
-            // and the meshes have a property "Dude" that IS the instance
-            // see render loop then....
-        }
-
-
-    });
-}
-
-
-function doClone(originalMesh, skeletons, id) {
-    let myClone;
-    let xrand = Math.floor(Math.random() * 500 - 250);
-    let zrand = Math.floor(Math.random() * 500 - 250);
-
-    myClone = originalMesh.clone("clone_" + id);
-    myClone.position = new BABYLON.Vector3(xrand, 0, zrand);
-
-    if (!skeletons) return myClone;
-
-    // The mesh has at least one skeleton
-    if (!originalMesh.getChildren()) {
-        myClone.skeleton = skeletons[0].clone("clone_" + id + "_skeleton");
-        return myClone;
-    } else {
-        if (skeletons.length === 1) {
-            // the skeleton controls/animates all children, like in the Dude model
-            let clonedSkeleton = skeletons[0].clone("clone_" + id + "_skeleton");
-            myClone.skeleton = clonedSkeleton;
-            let nbChildren = myClone.getChildren().length;
-
-            for (let i = 0; i < nbChildren; i++) {
-                myClone.getChildren()[i].skeleton = clonedSkeleton
-            }
-            return myClone;
-        } else if (skeletons.length === originalMesh.getChildren().length) {
-            // each child has its own skeleton
-            for (let i = 0; i < myClone.getChildren().length; i++) {
-                myClone.getChildren()[i].skeleton = skeletons[i].clone("clone_" + id + "_skeleton_" + i);
-            }
-            return myClone;
-        }
-    }
-
-    return myClone;
-}
 
 window.addEventListener("resize", () => {
     engine.resize()
 });
 
 function modifySettings() {
-    // as soon as we click on the game window, the mouse pointer is "locked"
-    // you will have to press ESC to unlock it
-    /*scene.onPointerDown = () => {
+    /*
+    scene.onPointerDown = () => {
         if(!scene.alreadyLocked) {
             console.log("requesting pointer lock");
             canvas.requestPointerLock();
@@ -677,6 +615,8 @@ function modifySettings() {
     inputStates.up = false;
     inputStates.down = false;
     inputStates.space = false;
+    inputStates.attack = false;
+
 
     //add the listener to the main, window object, and update the states
     window.addEventListener('keydown', (event) => {
@@ -690,6 +630,9 @@ function modifySettings() {
             inputStates.down = true;
         } else if (event.key === " ") {
             inputStates.space = true;
+        }
+        else if ((event.key === "e") || (event.key === "E")) {
+            inputStates.attack = true;
         }
     }, false);
 
@@ -707,6 +650,9 @@ function modifySettings() {
             inputStates.down = false;
         } else if (event.key === " ") {
             inputStates.space = false;
+        }
+        else if ((event.key === "e") || (event.key === "E")) {
+            inputStates.attack = false;
         }
     }, false);
 }
