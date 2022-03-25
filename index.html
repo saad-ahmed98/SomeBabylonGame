@@ -18,8 +18,23 @@
         <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
         <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
         <script type="module" src="js/main.js"></script>
+        <style>
+        #fps {
+            position: absolute;
+            background-color: black;
+            border: 2px solid red;
+            text-align: center;
+            font-size: 16px;
+            color: white;
+            top: 15px;
+            right: 10px;
+            width: 60px;
+            height: 20px;
+        }
+</style>
     </head>
     <body>
+        <div id="fps">0</div>
         <canvas id="myCanvas" width=1600 height=1200></canvas>
     </body>
 </html>

@@ -17,12 +17,13 @@ var haswalljump = false;
 var isattacking = false;
 var poswalljumping = 0;
 
+let divFps = document.getElementById("fps");
 
 
 window.onload = startGame;
 
+
 function configureAssetManager(scene) {
-    console.log("ici")
     // useful for storing references to assets as properties. i.e scene.assets.cannonsound, etc.
     scene.assets = {};
 
@@ -49,32 +50,42 @@ function configureAssetManager(scene) {
     };
 
     assetsManager.onFinish = function (tasks) {
+        createScene(scene)
+        let tank = scene.getMeshByName("heroTank");
         engine.runRenderLoop(function () {
-            scene.toRender();
+            scene.toRender(tank);
         });
     };
 
     return assetsManager;
 }
 
+function loadAssets(scene){
+    loadSounds(scene);
+    loadBuildings(scene);
+}
+
 function startGame() {
     canvas = document.querySelector("#myCanvas");
     engine = new BABYLON.Engine(canvas, true);
-    scene = createScene();
+    scene = new BABYLON.Scene(engine);
+    scene.assetsManager = configureAssetManager(scene);
+    loadAssets(scene);
+
 
     // modify some default settings (i.e pointer events to prevent cursor to go 
     // out of the game window)
     modifySettings();
 
-    let tank = scene.getMeshByName("heroTank");
 
-    scene.toRender = () => {
+    scene.toRender = (tank) => {
+        divFps.innerHTML = engine.getFps().toFixed() + " fps";
+
         let deltaTime = engine.getDeltaTime(); // remind you something ?
 
         tank.move();
         //tank.lookAt(new BABYLON.Vector3(lookAt*10000000, tank.position.y, 0));
         //console.log("ici")
-
 
         scene.render();
     };
@@ -82,6 +93,62 @@ function startGame() {
 
 }
 
+function loadBuildings(scene){
+    let meshTask = scene.assetsManager.addMeshTask(
+        "6story task",
+        "",
+        "models/",
+        "6Story_Balcony.glb"
+      );
+    
+      meshTask.onSuccess = function (task) {
+        scene.assets.sixstorybalcony = task.loadedMeshes[1]
+      };
+
+    meshTask = scene.assetsManager.addMeshTask(
+        "3story task",
+        "",
+        "models/",
+        "3Story_Balcony.glb"
+      );
+    
+      meshTask.onSuccess = function (task) {
+        scene.assets.threestorybalcony = task.loadedMeshes[1]
+      };
+
+    meshTask = scene.assetsManager.addMeshTask(
+        "2story wide task",
+        "",
+        "models/",
+        "2Story_Wide.glb"
+      );
+    
+      meshTask.onSuccess = function (task) {
+        scene.assets.twostorywide = task.loadedMeshes[1]
+      };
+
+      meshTask = scene.assetsManager.addMeshTask(
+        "4story center task",
+        "",
+        "models/",
+        "4Story_Center.glb"
+      );
+    
+      meshTask.onSuccess = function (task) {
+        scene.assets.fourstorycenter = task.loadedMeshes[1]
+      };
+
+      meshTask = scene.assetsManager.addMeshTask(
+        "building2 task",
+        "",
+        "models/",
+        "Building2_Large.glb"
+      );
+    
+      meshTask.onSuccess = function (task) {
+        scene.assets.buildingtwolarge = task.loadedMeshes[0]
+      };
+}
 function loadSounds(scene) {
     var assetsManager = scene.assetsManager;
     var binaryTask = assetsManager.addBinaryFileTask(
@@ -109,11 +176,8 @@ function swingSword(scene, tank) {
 }
 
 
-function createScene() {
-    let scene = new BABYLON.Scene(engine);
+function createScene(scene) {
     let ground = createGround(scene);
-    scene.assetsManager = configureAssetManager(scene);
-
     const groundMaterial = new BABYLON.GridMaterial("groundMaterial", scene);
     //groundMaterial.diffuseTexture = new BABYLON.Texture("images/grass.jpg");
     ground.material = groundMaterial;
@@ -147,6 +211,7 @@ function createScene() {
             meshes[i]._scene.animationGroups[2].play(true)
             tank.animationGroups = meshes[i]._scene.animationGroups
         }
+        /*
         let hand =meshes[0].getChildren()[0].getChildren()[3].getChildren()[0].getChildren()[0].getChildren()[0].getChildren()[0].getChildren()[1].getChildren()[0].getChildren()[0].getChildren()[0].getChildren()[0]
         BABYLON.SceneLoader.ImportMesh("Plane", "models/", "cartoonSword.glb", scene, function (meshes, particleSystems, skeletons) {
                 meshes[0].name = "sword";
@@ -160,32 +225,14 @@ function createScene() {
     
                 //meshes[0].rotation = new BABYLON.Vector3(0, 0, 20);
         });
+        */
     });
-    /*
-    BABYLON.SceneLoader.ImportMesh("Plane", "models/", "cartoonSword.glb", scene, function (meshes, particleSystems, skeletons) {
-        for (let i = 0; i < meshes.length; i++) {
-            meshes[i].name = "sword" + i;
-            meshes[i].parent = tank;
-            meshes[i].position.x = 6;
-            meshes[i].position.z = 1;
-
-            meshes[i].scaling.x = 0.3;
-            meshes[i].scaling.z = 0.3;
-            meshes[i].scaling.y = 0.3;
-
-            meshes[i].rotation = new BABYLON.Vector3(0, 20, -5);
-        }
-    });
-    */
 
 
     var obstacles = createObstaclesLVL1(scene);
     var pickups = createPickupsLVL1(scene);
-    createEndLevel(scene);
+    var endlvl = createEndLevelLVL1(scene);
 
-    for (let i = 0; i < obstacles.length; i++) {
-        obstacles[i].mesh.material = groundMaterial;
-    }
 
     let followCamera = createFollowCamera(scene, tank);
     scene.activeCamera = followCamera;
@@ -209,17 +256,6 @@ function createScene() {
 
         createLights(scene);
 
-
-        /*window.addEventListener("mousemove", function () {
-            // We try to pick an object
-            var pickResult = scene.pick(scene.pointerX, scene.pointerY);
-            if (pickResult.hit) {
-                var targetPoint = pickResult.pickedPoint;
-                targetPoint.y = tank.position.y;
-                tank.lookAt(targetPoint);
-            }
-        });
-        */
     })
 
     tank.move = () => {
@@ -228,6 +264,8 @@ function createScene() {
             let idle = true;
             wavePickups(pickups);
             contactPickups(pickups, tank);
+            contactEndLevel(endlvl, tank);
+
             if (tank.animationGroups[5]._isStarted == false)
                 isattacking = false;
 
@@ -370,7 +408,6 @@ function createScene() {
         }
     }
     */
-    loadSounds(scene);
 
 
     return scene;
@@ -398,12 +435,20 @@ function wavePickups(pickups) {
     }
 }
 
+function contactEndLevel(endlvl, tank){
+        if (Math.abs(endlvl.position.x - tank.position.x) <= 10 && Math.abs(endlvl.position.y - tank.position.y) <= 10) {
+            console.log("LEVEL FINISHED!");
+    }
+}
+
 function contactPickups(pickups, tank) {
 
     for (let i = 0; i < pickups.length; i++) {
         if (!pickups[i].dead) {
-            if (Math.abs(pickups[i].mesh.position.x - tank.position.x) <= 5 && Math.abs(pickups[i].mesh.position.y - tank.position.y) <= 5) {
+            if (Math.abs(pickups[i].mesh.position.x - tank.position.x) <= 10 && Math.abs(pickups[i].mesh.position.y - tank.position.y) <= 10) {
                 console.log("WALL JUMP OBTAINED");
+                console.log("Keep mantained space bar while jumping on walls to be sent to the other direction!");
+
                 haswalljump = true;
                 pickups[i].mesh.dispose();
                 pickups[i].dead = true;
@@ -455,7 +500,7 @@ function createPickupsLVL1(scene) {
     var pickup = new Pickup(obj.position.y, 2, obj)
     pickups.push(pickup);
 
-    var particleSystem = new BABYLON.ParticleSystem("particles", 2000, scene);
+    /*var particleSystem = new BABYLON.ParticleSystem("particles", 10, scene);
     particleSystem.maxScaleX = 2;
     particleSystem.maxScaleY = 2;
 
@@ -470,12 +515,12 @@ function createPickupsLVL1(scene) {
     particleSystem.particleTexture = new BABYLON.Texture("images/flare.png");
     particleSystem.emitter = pickup.mesh;
     particleSystem.start();
+    */
 
     return pickups;
 }
 
 function createObstaclesLVL1(scene) {
-
     var obstt = []
     var obj;
     var obst = new Obstacle(100, 100, 300)
@@ -483,13 +528,31 @@ function createObstaclesLVL1(scene) {
     obj.position.y = -50;
     obj.position.x = -650;
     obst.mesh = obj;
+    obj.visibility = 0;
+    let building = scene.assets.twostorywide.clone("building1");
+    building.parent = obj;
+    building.scaling.x = 80;
+    building.scaling.y = 50;
+    building.scaling.z = 80;
+    building.rotation = new BABYLON.Vector3(0, 3.15, 0);
+    building.position.y = -78;
+
     obstt.push(obst)
 
     obst = new Obstacle(180, 100, 200)
     obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, scene);
-    obj.position.y = -50;
-    obj.position.x = -350;
+    obj.position.y = -55;
+    obj.position.x = -355;
     obst.mesh = obj;
+    obj.visibility = 0;
+
+    building = scene.assets.twostorywide.clone("building2");
+    building.parent = obj;
+    building.scaling.x = 55;
+    building.scaling.y = 50;
+    building.scaling.z = 55;
+    building.rotation = new BABYLON.Vector3(0, 3.15, 0);
+    building.position.y = -38;
     obstt.push(obst)
 
     obst = new Obstacle(10, 50, 60)
@@ -499,10 +562,17 @@ function createObstaclesLVL1(scene) {
     obst.mesh = obj;
     obstt.push(obst)
 
-    obst = new Obstacle(50, 100, 300)
+    obst = new Obstacle(10, 50, 60)
     obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, scene);
-    obj.position.y = 80;
-    obj.position.x = -50;
+    obj.position.y = 95;
+    obj.position.x = -170;
+    obst.mesh = obj;
+    obstt.push(obst)
+
+    obst = new Obstacle(10, 50, 60)
+    obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, scene);
+    obj.position.y = 125;
+    obj.position.x = -90;
     obst.mesh = obj;
     obstt.push(obst)
 
@@ -511,13 +581,37 @@ function createObstaclesLVL1(scene) {
     obj.position.y = -40;
     obj.position.x = -100;
     obst.mesh = obj;
+    obj.visibility = 0;
+
+    building = scene.assets.fourstorycenter.clone("building3");
+    building.parent = obj;
+    building.scaling.x = 70;
+    building.scaling.y = 60;
+    building.scaling.z = 65;
+    building.rotation = new BABYLON.Vector3(0, 3.15, 0);
+    building.position.y = -255;
+    building.position.x = -15;
+
+
     obstt.push(obst)
 
-    obst = new Obstacle(190, 100, 130)
+    
+
+    obst = new Obstacle(320, 100, 130)
     obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, scene);
     obj.position.y = -40;
     obj.position.x = 35;
     obst.mesh = obj;
+    obj.visibility = 0;
+
+    building = scene.assets.fourstorycenter.clone("building4");
+    building.parent = obj;
+    building.scaling.x = 55;
+    building.scaling.y = 45;
+    building.scaling.z = 50;
+    building.rotation = new BABYLON.Vector3(0, 3.15, 0);
+    building.position.y = -62;
+    //building.position.x = -15;
     obstt.push(obst)
 
     obst = new Obstacle(10, 70, 100)
@@ -527,25 +621,46 @@ function createObstaclesLVL1(scene) {
     obst.mesh = obj;
     obstt.push(obst)
 
+
+
     var obst = new Obstacle(100, 100, 300)
     obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, scene);
     obj.position.y = -50;
     obj.position.x = 500;
     obst.mesh = obj;
+    obj.visibility = 0;
+    building = scene.assets.twostorywide.clone("building5");
+    building.parent = obj;
+    building.scaling.x = 80;
+    building.scaling.y = 50;
+    building.scaling.z = 80;
+    building.rotation = new BABYLON.Vector3(0, 3.15, 0);
+    building.position.y = -78;
+
     obstt.push(obst)
 
     var obst = new Obstacle(100, 100, 7)
     obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, scene);
-    obj.position.y = 70;
-    obj.position.x = 555;
+    obj.position.y = 80;
+    obj.position.x = 640;
     obst.mesh = obj;
     obstt.push(obst)
 
-    var obst = new Obstacle(100, 100, 50)
+    var obst = new Obstacle(300, 100, 300)
     obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, scene);
-    obj.position.y = 50;
-    obj.position.x = 625;
+    obj.position.y = -65;
+    obj.position.x = 830;
     obst.mesh = obj;
+
+    obj.visibility = 0;
+    building = scene.assets.buildingtwolarge.clone("building5");
+    building.parent = obj;
+    building.scaling.x = 52;
+    building.scaling.y = 52;
+    building.scaling.z = 30;
+    building.rotation = new BABYLON.Vector3(0, 3.15, 0);
+    building.position.y = -147;
+
     obstt.push(obst)
 
     return obstt;
@@ -553,47 +668,28 @@ function createObstaclesLVL1(scene) {
 
 function createGround(scene) {
     var ground = BABYLON.MeshBuilder.CreateBox("Ground", { depth: 100, width: 1600, height: 50 }, scene);
-    ground.position.y = -100;
+    ground.position.y = -400;
     ground.checkCollisions = true;
     return ground;
 }
 
-function createEndLevel(scene) {
-    /*
-    var obj = new BABYLON.MeshBuilder.CreateBox("", { height: 10, depth: 10, width: 5 }, scene);
-    obj.position.y = 105;
-    obj.position.x = 630;
-    obj.visibility = 0;
+function createEndLevelLVL1(scene) {
+    var obj = new BABYLON.MeshBuilder.CreateBox("", { height: 30, depth: 5, width: 15 }, scene);
+    obj.position.y = 90;
+    obj.position.x = 850;
+    obj.visibility = 0.3;
 
-    var particleSystem = new BABYLON.ParticleSystem("", 2000,scene);
-    particleSystem.maxSize = 7;
+    var obj2 = new BABYLON.Mesh.CreateDisc("", 10, 64, scene);
+    var objmat = new BABYLON.StandardMaterial("", scene);
+    objmat.diffuseTexture = new BABYLON.Texture("images/endlvl.png", scene);
+
+    obj2.material = objmat;
+    obj2.position.y = 130;
+    obj2.position.x = 850;
 
 
+    return obj;
 
-    var noiseTexture = new BABYLON.NoiseProceduralTexture("", 256, scene);
-    noiseTexture.animationSpeedFactor = 1;
-    noiseTexture.persistence = 2;
-    noiseTexture.brightness = 0.5;
-    noiseTexture.octaves = 1;
-    particleSystem.noiseTexture = noiseTexture;
-    particleSystem.noiseStrength = new BABYLON.Vector3(100, 100, 100);
-    //Texture of each particle
-    particleSystem.particleTexture = new BABYLON.Texture("images/flare.png");
-    // Position where the particles are emiited from
-    particleSystem.emitter = obj;
-    particleSystem.start();
-
-    /*
-    var particleSystem = new BABYLON.ParticleSystem("particles", 2000,scene);
-
-    //Texture of each particle
-    particleSystem.particleTexture = new BABYLON.Texture("images/flare.png");
-
-    // Position where the particles are emiited from
-    particleSystem.emitter = new BABYLON.Vector3(0, 0.5, 0);
-
-    particleSystem.start();
-    */
 }
 
 function createLights(scene) {
