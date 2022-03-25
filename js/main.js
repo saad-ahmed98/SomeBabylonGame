@@ -83,44 +83,12 @@ function startGame() {
         
             engine.runRenderLoop(() => {
                 let deltaTime = engine.getDeltaTime(); // remind you something ?
-                
+                let tank = scene.getMeshByName("heroTank");
+                if(tank!=null){
+                    tank.move();
+                }
                 scene.render();
             });
-            }else{
-                console.log("test")
-                let tank = scene.getMeshByName("heroTank");
-                tank.move();
-                scene.toRender = () => {
-                    let deltaTime = engine.getDeltaTime(); // remind you something ?
-            
-                    tank.move();
-                    //tank.lookAt(new BABYLON.Vector3(lookAt*10000000, tank.position.y, 0));
-                    //console.log("ici")
-            
-            
-                    scene.render();
-                };
-                scene.assetsManager.load();
-                scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
-                var physicsEngine = scene.getPhysicsEngine();
-                physicsEngine.setGravity(new BABYLON.Vector3(0, -200, 0));
-        
-        
-        
-                // Add Imposters
-                tank.physicsImpostor = new BABYLON.PhysicsImpostor(tank, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 2, restitution: 0 }, scene);
-        
-                tank.position.y = 20
-
-                ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.1 }, scene);
-                ground.physicsImpostor.registerOnPhysicsCollide(tank.physicsImpostor, function () {
-                    console.log("GAME OVER")
-                })
-        
-                addObstaclesPhysics(obstacles, tank, scene)
-        
-                createLights(scene);
-
             }
         })
            
@@ -316,6 +284,7 @@ function createScene(show) {
     createLights(scene);
 
     tank.move = () => {
+        console.log("test")
         if (tank.animationGroups != undefined) {
 
             let idle = true;
@@ -403,6 +372,7 @@ function createScene(show) {
             }
             
         }
+        
     }
 
 
