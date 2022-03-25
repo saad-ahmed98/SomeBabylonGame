@@ -259,6 +259,10 @@ function createScene(scene) {
     })
 
     tank.move = () => {
+        if (tank.position.y < -20){
+            scene.activeCamera.lockedTarget = null
+        }
+
         if (tank.animationGroups != undefined) {
 
             let idle = true;
@@ -703,7 +707,7 @@ function createLights(scene) {
 function createFollowCamera(scene, target) {
     let camera = new BABYLON.FollowCamera("tankFollowCamera", target.position, scene, target);
 
-    camera.radius = 100; // how far from the object to follow
+    camera.radius = 150; // how far from the object to follow
     camera.heightOffset = 10; // how high above the object to place the camera
     camera.rotationOffset = 90; // the viewing angle
     camera.cameraAcceleration = .1; // how fast to move
