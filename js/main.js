@@ -16,6 +16,7 @@ var walljump = 0;
 var haswalljump = false;
 var isattacking = false;
 var poswalljumping = 0;
+var rollingAverage;
 
 let divFps = document.getElementById("fps");
 
@@ -76,16 +77,15 @@ function startGame() {
     // modify some default settings (i.e pointer events to prevent cursor to go 
     // out of the game window)
     modifySettings();
+    rollingAverage = new BABYLON.RollingAverage(60);
 
 
     scene.toRender = (tank) => {
         divFps.innerHTML = engine.getFps().toFixed() + " fps";
-
-        let deltaTime = engine.getDeltaTime(); // remind you something ?
+        rollingAverage.add(scene.getAnimationRatio());
 
         tank.move();
-        //tank.lookAt(new BABYLON.Vector3(lookAt*10000000, tank.position.y, 0));
-        //console.log("ici")
+
 
         scene.render();
     };
@@ -274,8 +274,8 @@ function createScene(scene) {
                 if (walljumpingleft && walljump < 25 && haswalljump) {
                     if (walljump < 15)
                         inputStates.right = false;
-                    tank.moveWithCollisions(new BABYLON.Vector3(-0.7 * tank.speed, 0, 0));
-                    tank.moveWithCollisions(new BABYLON.Vector3(0, 2 * tank.speed, 0));
+                    tank.moveWithCollisions(new BABYLON.Vector3(-0.7 * rollingAverage.average*tank.speed, 0, 0));
+                    tank.moveWithCollisions(new BABYLON.Vector3(0, 2 * rollingAverage.average*tank.speed, 0));
                     tank.lookAt(new BABYLON.Vector3(-10000000, 0, 0));
                     followCamera.rotationOffset = -90
                     lookAt = -1
@@ -286,8 +286,8 @@ function createScene(scene) {
                     if (walljumpingright && walljump < 25 && haswalljump) {
                         if (walljump < 15)
                             inputStates.left = false;
-                        tank.moveWithCollisions(new BABYLON.Vector3(0.7 * tank.speed, 0, 0));
-                        tank.moveWithCollisions(new BABYLON.Vector3(0, 2 * tank.speed, 0));
+                        tank.moveWithCollisions(new BABYLON.Vector3(0.7 * rollingAverage.average*tank.speed, 0, 0));
+                        tank.moveWithCollisions(new BABYLON.Vector3(0, 2 * rollingAverage.average*tank.speed, 0));
                         tank.lookAt(new BABYLON.Vector3(10000000, 0, 0));
                         followCamera.rotationOffset = 90
                         lookAt = 1
@@ -295,7 +295,7 @@ function createScene(scene) {
                     }
                     else {
                         if (jumping || jumpingstarted < 30) {
-                            tank.moveWithCollisions(new BABYLON.Vector3(0, 1.2 * tank.speed, 0));
+                            tank.moveWithCollisions(new BABYLON.Vector3(0, 1.2 * rollingAverage.average*tank.speed, 0));
                             tank.lookAt(new BABYLON.Vector3(lookAt * 10000000, 0, 0));
                             jumpingstarted++
                             jumping = false;
@@ -312,7 +312,7 @@ function createScene(scene) {
             if (inputStates.left) {
                 idle = false
 
-                tank.moveWithCollisions(new BABYLON.Vector3(-1 * tank.speed, 0, 0));
+                tank.moveWithCollisions(new BABYLON.Vector3(-1 * rollingAverage.average*tank.speed, 0, 0));
                 tank.lookAt(new BABYLON.Vector3(-10000000, 0, 0));
                 followCamera.rotationOffset = -90
                 lookAt = -1
@@ -322,7 +322,7 @@ function createScene(scene) {
             if (inputStates.right) {
                 idle = false
 
-                tank.moveWithCollisions(new BABYLON.Vector3(1 * tank.speed, 0, 0));
+                tank.moveWithCollisions(new BABYLON.Vector3(1 * rollingAverage.average*tank.speed, 0, 0));
                 tank.lookAt(new BABYLON.Vector3(10000000, 0, 0));
                 followCamera.rotationOffset = 90
                 lookAt = 1
