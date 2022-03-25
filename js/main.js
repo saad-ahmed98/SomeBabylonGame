@@ -179,11 +179,9 @@ function swingSword(scene, tank) {
 function createScene(scene) {
     let ground = createGround(scene);
     const groundMaterial = new BABYLON.GridMaterial("groundMaterial", scene);
-    //groundMaterial.diffuseTexture = new BABYLON.Texture("images/grass.jpg");
     ground.material = groundMaterial;
 
     let tank = createTank(scene);
-    //var layer = new BABYLON.Layer('','images/skybox.png', scene, true);
 
     let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 1687.5, depth: 1, width: 3200 }, scene);
     skybox.position.y = 100;
