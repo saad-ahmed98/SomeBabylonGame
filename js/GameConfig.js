@@ -1,0 +1,67 @@
+
+export default class GameConfig{
+    constructor(canvas,divFps){
+        this.canvas = canvas;
+        this.engine = new BABYLON.Engine(canvas, true);
+        this.inputStates = {};
+        this.rollingAverage = new BABYLON.RollingAverage(60);
+        this.modifySettings();
+        this.jumpingstarted = 0;
+        this.divFps = divFps;
+    }
+
+    createNewEngine(){
+        this.engine.dispose()
+        this.engine = new BABYLON.Engine(this.canvas, true);
+    }
+
+    modifySettings() {
+
+    // key listeners for the player
+    this.inputStates.left = false;
+    this.inputStates.right = false;
+    this.inputStates.up = false;
+    this.inputStates.down = false;
+    this.inputStates.space = false;
+    this.inputStates.attack = false;
+
+
+    //add the listener to the main, window object, and update the states
+    window.addEventListener('keydown', (event) => {
+        if ((event.key === "ArrowLeft") || (event.key === "q") || (event.key === "Q")) {
+            this.inputStates.left = true;
+        } else if ((event.key === "ArrowUp") || (event.key === "z") || (event.key === "Z")) {
+            this.inputStates.up = true;
+        } else if ((event.key === "ArrowRight") || (event.key === "d") || (event.key === "D")) {
+            this.inputStates.right = true;
+        } else if ((event.key === "ArrowDown") || (event.key === "s") || (event.key === "S")) {
+            this.inputStates.down = true;
+        } else if (event.key === " ") {
+            this.inputStates.space = true;
+        }
+        else if ((event.key === "e") || (event.key === "E")) {
+            this.inputStates.attack = true;
+        }
+    }, false);
+
+    //if the key will be released, change the states object 
+    window.addEventListener('keyup', (event) => {
+        if ((event.key === "ArrowLeft") || (event.key === "q") || (event.key === "Q")) {
+            this.inputStates.left = false;
+        } else if ((event.key === "ArrowUp") || (event.key === "z") || (event.key === "Z")) {
+            this.jumpingstarted = 30;
+
+            this.inputStates.up = false;
+        } else if ((event.key === "ArrowRight") || (event.key === "d") || (event.key === "D")) {
+            this.inputStates.right = false;
+        } else if ((event.key === "ArrowDown") || (event.key === "s") || (event.key === "S")) {
+            this.inputStates.down = false;
+        } else if (event.key === " ") {
+            this.inputStates.space = false;
+        }
+        else if ((event.key === "e") || (event.key === "E")) {
+            this.inputStates.attack = false;
+        }
+    }, false);
+}
+}
