@@ -8,7 +8,7 @@ Ceci est un jeu plateforme action en cours de développement pour le concours **
 
 ## Etat d'avancement
 Actuellement, un premier niveau est presque complet.  
-Il est nécessaire d'activer la console pour voir les messages du jeu tels que Game Over ou acquisition de pouvoirs à cause de manque de GUI.
+Un deuxième niveau sera crée prochainement.
 
 ## Code
 Certaines remarques :
