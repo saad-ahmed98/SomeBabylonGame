@@ -1,6 +1,7 @@
 
 import GameConfig from "./GameConfig.js";
 import LVL1 from "./LVL1.js";
+import MainMenu from "./MainMenu.js";
 
 
 
@@ -15,8 +16,9 @@ function startGame() {
     //engine = new BABYLON.Engine(canvas, true);
 
     let gameconfig = new GameConfig(canvas,divFps)
+    new MainMenu(gameconfig);
 
-    let lvl1 = new LVL1(gameconfig);
+    //let lvl1 = new LVL1(gameconfig);
 
     })
 
