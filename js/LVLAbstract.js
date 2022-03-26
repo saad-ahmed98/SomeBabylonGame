@@ -1,12 +1,17 @@
+import MovingPlatform from "./MovingPlatform.js";
+import LVLGUIController from "./LVLGUIController.js";
+
 
 export default class LVLAbstract {
-    constructor(gameconfig) {
+    constructor(gameconfig,lvl) {
         this.scene = new BABYLON.Scene(gameconfig.engine);
         this.player;
         this.pickups;
         this.obstacles;
         this.endlvl;
         this.gameconfig = gameconfig;
+        this.gui = new LVLGUIController(this.scene,gameconfig,lvl);
+
 
         //variables d'état, à changer
         this.jumping = true;
@@ -25,23 +30,23 @@ export default class LVLAbstract {
 
     wavePickups() {
         for (let i = 0; i <this.pickups.length; i++) {
-           this.pickups[i].mesh.position.y =this.pickups[i].mesh.position.y + (0.2 *this.pickups[i].direction);
-            if (this.pickups[i].mesh.position.y >this.pickups[i].originaly +this.pickups[i].offset)
-               this.pickups[i].direction = -1;
-
-            if (this.pickups[i].mesh.position.y <this.pickups[i].originaly -this.pickups[i].offset)
-               this.pickups[i].direction = 1;
+            this.pickups[i].move()
         }
     }
 
-    contactPickups() {
+    waveMovingPlatforms() {
+        for (let i = 0; i <this.obstacles.length; i++) {
+            if(this.obstacles[i] instanceof MovingPlatform)
+            this.obstacles[i].move()
+        }
+    }
 
+
+    contactPickups() {
         for (let i = 0; i <this.pickups.length; i++) {
             if (!this.pickups[i].dead) {
                 if (Math.abs(this.pickups[i].mesh.position.x -this.player.position.x) <= 10 && Math.abs(this.pickups[i].mesh.position.y -this.player.position.y) <= 10) {
-                    console.log("WALL JUMP OBTAINED");
-                    console.log("Keep mantained space bar while jumping on walls to be sent to the other direction!");
-
+                    this.gui.createTooltip("/images/WalljumpTooltip.png","700px","200px");
                    this.haswalljump = true;
                    this.pickups[i].mesh.dispose();
                    this.pickups[i].dead = true;
@@ -54,7 +59,7 @@ export default class LVLAbstract {
     addObstaclesPhysics() {
         var instance = this;
         for (let i = 0; i <this.obstacles.length; i++) {
-           this.obstacles[i].mesh.physicsImpostor = new BABYLON.PhysicsImpostor(this.obstacles[i].mesh, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.1 },this.scene);
+           this.obstacles[i].mesh.physicsImpostor = new BABYLON.PhysicsImpostor(this.obstacles[i].mesh, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0,friction:0.1, restitution: 0.1 },this.scene);
            this.obstacles[i].mesh.physicsImpostor.registerOnPhysicsCollide(this.player.physicsImpostor, function (obj, t) {
                 if (t.object.position.y -instance.obstacles[i].mesh.position.y -instance.obstacles[i].height / 2 > 0) {
                     instance.walljumpingleft = false;

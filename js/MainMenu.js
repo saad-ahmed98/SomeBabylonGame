@@ -12,28 +12,6 @@ export default class MainMenu  {
         
     }
 
-  
-
-    loadSounds() {
-        var instance = this;
-        var assetsManager = instance.scene.assetsManager;
-        var binaryTask = assetsManager.addBinaryFileTask(
-            "swordSwing",
-            "sounds/sword swing.wav"
-        );
-        binaryTask.onSuccess = function (task) {
-            instance.scene.assets.swordSwingSound = new BABYLON.Sound(
-                "swordSwing",
-                task.data,
-                this.scene,
-                null,
-                {
-                    loop: false,
-                }
-            );
-        };
-    }
-
 
 createMainMenu() {
     this.showinggui = true;
@@ -43,7 +21,7 @@ createMainMenu() {
     image.height = "200px";
     image.top = "-150px;"
 
-    var newGame = BABYLON.GUI.Button.CreateImageOnlyButton("newGame", "images/newgame.png");
+    var newGame = BABYLON.GUI.Button.CreateImageOnlyButton("newGame", "images/NewGameButton.png");
     newGame.width = "300px"
     newGame.height = "100px";
     newGame.cornerRadius = 10;
@@ -51,7 +29,7 @@ createMainMenu() {
 
     newGame.onPointerUpObservable.add(function () {
         instance.gameconfig.createNewEngine()
-        newlvl = new LVL1(instance.gameconfig);
+        new LVL1(instance.gameconfig);
     });
     
 

@@ -1,14 +1,14 @@
 import LVLAbstract from "./LVLAbstract.js";
 import Obstacle from "./Obstacle.js";
 import Pickup from "./Pickup.js";
-import LVLGUIController from "./LVLGUIController.js";
+import MovingPlatform from "./MovingPlatform.js";
 
 
 
 export default class LVL1 extends LVLAbstract {
     constructor(gameconfig) {
-        super(gameconfig);
-        this.gui = new LVLGUIController(this.scene,gameconfig,"lvl1");
+        super(gameconfig,"lvl1");
+        this.gui.createTooltip("/images/ControlsTooltip.png","400px","200px");
     }
 
     renderScene() {
@@ -152,6 +152,7 @@ export default class LVL1 extends LVLAbstract {
             if (this.player.animationGroups != undefined) {
 
                 let idle = true;
+                this.waveMovingPlatforms();
                 this.wavePickups();
                 this.contactPickups();
                 this.contactEndLevel();
@@ -330,6 +331,8 @@ export default class LVL1 extends LVLAbstract {
         obst.mesh = obj;
         obstt.push(obst)
 
+
+        //obst = new Obstacle(10, 50, 60)
         obst = new Obstacle(10, 50, 60)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.y = 125;
@@ -370,7 +373,6 @@ export default class LVL1 extends LVLAbstract {
         building.scaling.z = 50;
         building.rotation = new BABYLON.Vector3(0, 3.15, 0);
         building.position.y = -62;
-        //building.position.x = -15;
         obstt.push(obst)
 
         obst = new Obstacle(10, 70, 100)

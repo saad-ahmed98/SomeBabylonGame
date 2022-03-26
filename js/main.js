@@ -1,6 +1,5 @@
 
 import GameConfig from "./GameConfig.js";
-import LVL1 from "./LVL1.js";
 import MainMenu from "./MainMenu.js";
 
 
@@ -8,22 +7,25 @@ import MainMenu from "./MainMenu.js";
 
 window.onload = startGame;
 
+let gameconfig;
 
 function startGame() {
     Ammo().then(() => {
     let divFps = document.getElementById("fps");
     let canvas = document.querySelector("#myCanvas");
-    //engine = new BABYLON.Engine(canvas, true);
 
-    let gameconfig = new GameConfig(canvas,divFps)
+    gameconfig = new GameConfig(canvas,divFps)
     new MainMenu(gameconfig);
 
-    //let lvl1 = new LVL1(gameconfig);
 
     })
 
 }
 
+
+window.addEventListener("resize", () => {
+    gameconfig.engine.resize()
+});
 
 /*
 function swingSword(scene, player) {
