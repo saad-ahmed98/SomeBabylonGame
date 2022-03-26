@@ -46,7 +46,7 @@ export default class LVLAbstract {
         for (let i = 0; i <this.pickups.length; i++) {
             if (!this.pickups[i].dead) {
                 if (Math.abs(this.pickups[i].mesh.position.x -this.player.position.x) <= 10 && Math.abs(this.pickups[i].mesh.position.y -this.player.position.y) <= 10) {
-                    this.gui.createTooltip("/images/WalljumpTooltip.png","700px","200px");
+                    this.gui.createTooltip("images/WalljumpTooltip.png","700px","200px");
                    this.haswalljump = true;
                    this.pickups[i].mesh.dispose();
                    this.pickups[i].dead = true;

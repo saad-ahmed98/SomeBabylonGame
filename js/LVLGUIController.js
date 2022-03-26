@@ -17,7 +17,7 @@ export default class LVLGUIController {
         var instance = this;
         this.lvlcontroller.dispose();
         this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene);
-        var image = new BABYLON.GUI.Image("gameover", "/images/Game Over.png");
+        var image = new BABYLON.GUI.Image("gameover", "images/Game Over.png");
         image.width = "700px";
         image.height = "200px";
         image.top = "-150px;"
@@ -58,7 +58,7 @@ export default class LVLGUIController {
         this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene);
         this.showinggui = true;
         var instance = this;
-        var image = new BABYLON.GUI.Image("lvlclear", "/images/Level Clear.png");
+        var image = new BABYLON.GUI.Image("lvlclear", "images/Level Clear.png");
         image.width = "700px";
         image.height = "200px";
         image.top = "-150px;"

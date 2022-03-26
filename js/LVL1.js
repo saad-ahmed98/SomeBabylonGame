@@ -8,7 +8,7 @@ import MovingPlatform from "./MovingPlatform.js";
 export default class LVL1 extends LVLAbstract {
     constructor(gameconfig) {
         super(gameconfig,"lvl1");
-        this.gui.createTooltip("/images/ControlsTooltip.png","400px","200px");
+        this.gui.createTooltip("images/ControlsTooltip.png","400px","200px");
     }
 
     renderScene() {
