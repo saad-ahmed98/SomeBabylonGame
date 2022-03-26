@@ -1,20 +1,20 @@
 import LVLAbstract from "./LVLAbstract.js";
 import Obstacle from "./Obstacle.js";
 import Pickup from "./Pickup.js";
-import LVL1 from "./LVL1.js";
+import LVLGUIController from "./LVLGUIController.js";
 
 
-export default class LV1 extends LVLAbstract {
+
+export default class LVL1 extends LVLAbstract {
     constructor(gameconfig) {
         super(gameconfig);
+        this.gui = new LVLGUIController(this.scene,gameconfig,"lvl1");
     }
 
     renderScene() {
         this.gameconfig.divFps.innerHTML = this.gameconfig.engine.getFps().toFixed() + " fps";
         this.gameconfig.rollingAverage.add(this.scene.getAnimationRatio());
-
         this.player.move();
-
         this.scene.render();
     }
 
@@ -135,7 +135,8 @@ export default class LV1 extends LVLAbstract {
 
         ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.1 }, this.scene);
         ground.physicsImpostor.registerOnPhysicsCollide(this.player.physicsImpostor, function () {
-            console.log("GAME OVER")
+            if(!instance.gui.showinggui)
+            instance.gui.createGameOverScreen()
         })
 
         this.addObstaclesPhysics()
@@ -242,9 +243,8 @@ export default class LV1 extends LVLAbstract {
 
     contactEndLevel() {
         if (Math.abs(this.endlvl.position.x -this.player.position.x) <= 10 && Math.abs(this.endlvl.position.y -this.player.position.y) <= 10) {
-            console.log("LEVEL FINISHED!");
-            this.gameconfig.createNewEngine()
-            let lvl2 = new LVL1(this.gameconfig)
+            if(!this.gui.showinggui)
+            this.gui.createLevelClearScreen()
         }
     }
 

@@ -133,8 +133,7 @@ export default class LVLAbstract {
     
         assetsManager.onProgress = function (
             remainingCount,
-            totalCount,
-            lastFinishedTask
+            totalCount
         ) {
             instance.gameconfig.engine.loadingUIText =
                 "We are loading the scene.. " +
@@ -142,13 +141,6 @@ export default class LVLAbstract {
                 " out of " +
                 totalCount +
                 " items still need to be loaded.";
-            console.log(
-                "We are loading the scene.. " +
-                remainingCount +
-                " out of " +
-                totalCount +
-                " items still need to be loaded."
-            );
         };
         assetsManager.onFinish = function (tasks) {
             instance.createScene()

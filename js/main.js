@@ -4,6 +4,7 @@ import LVL1 from "./LVL1.js";
 
 
 
+
 window.onload = startGame;
 
 
@@ -16,6 +17,7 @@ function startGame() {
     let gameconfig = new GameConfig(canvas,divFps)
 
     let lvl1 = new LVL1(gameconfig);
+
     })
 
 }
