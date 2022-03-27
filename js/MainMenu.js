@@ -16,7 +16,7 @@ export default class MainMenu  {
 createMainMenu() {
     this.showinggui = true;
     var instance = this;
-    var image = new BABYLON.GUI.Image("gameTitle", "/images/gametitle.png");
+    var image = new BABYLON.GUI.Image("gameTitle", "images/gametitle.png");
     image.width = "700px";
     image.height = "200px";
     image.top = "-150px;"
