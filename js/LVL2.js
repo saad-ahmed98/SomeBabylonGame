@@ -119,21 +119,6 @@ class LVL2 extends LVLAbstract {
 
         let followCamera = this.createFollowCamera(150);
         this.scene.activeCamera = followCamera;
-        console.log(this.scene.activeCamera)
-        this.scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
-        var physicsEngine = this.scene.getPhysicsEngine();
-        physicsEngine.setGravity(new BABYLON.Vector3(0, -200, 0));
-
-        // Add Imposters
-        this.player.physicsImpostor = new BABYLON.PhysicsImpostor(this.player, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 2, restitution: 0 }, this.scene);
-
-        ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.1 }, this.scene);
-        ground.physicsImpostor.registerOnPhysicsCollide(this.player.physicsImpostor, function () {
-            if(!instance.gui.showinggui)
-            instance.gui.createGameOverScreen()
-        })
-
-        this.addObstaclesPhysics()
 
         this.createLights();
 
@@ -141,15 +126,23 @@ class LVL2 extends LVLAbstract {
         this.player.move = () => {
             if (this.player.position.y < -20) {
                 this.scene.activeCamera.lockedTarget = null
+                if(!instance.gui.showinggui)
+                this.gui.createGameOverScreen()
+
             }
 
             if (this.player.animationGroups != undefined) {
 
                 let idle = true;
                 this.waveMovingPlatforms();
+                this.collisionMovingPlatforms();
                 this.wavePickups();
                 this.contactPickups();
                 this.contactEndLevel();
+                if(!this.jumping){
+                    this.player.position.y = this.player.position.y-2.2
+                    this.player.animationGroups[1].play()
+                }
 
                 if (this.player.animationGroups[5]._isStarted == false)
                     this.isattacking = false;
@@ -180,7 +173,7 @@ class LVL2 extends LVLAbstract {
                         }
                         else {
                             if (this.jumping || this.gameconfig.jumpingstarted < 30) {
-                                this.player.moveWithCollisions(new BABYLON.Vector3(0, 1.2 * this.gameconfig.rollingAverage.average * this.player.speed, 0));
+                                this.player.moveWithCollisions(new BABYLON.Vector3(0, 2 * this.gameconfig.rollingAverage.average * this.player.speed, 0));
                                 this.player.lookAt(new BABYLON.Vector3(this.lookAt * 10000000, 0, 0));
                                 this.gameconfig.jumpingstarted++
                                 this.jumping = false;

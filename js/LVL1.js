@@ -97,10 +97,11 @@ class LVL1 extends LVLAbstract {
 
     createScene() {
         var instance = this;
+        /*
         let ground = this.createGround(this.scene);
         const groundMaterial = new BABYLON.GridMaterial("groundMaterial", this.scene);
         ground.material = groundMaterial;
-
+        */
         this.createPlayer(-750, 20);
 
         let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 1687.5, depth: 1, width: 3200 }, this.scene);
@@ -119,20 +120,6 @@ class LVL1 extends LVLAbstract {
 
         let followCamera = this.createFollowCamera(150);
         this.scene.activeCamera = followCamera;
-        this.scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
-        var physicsEngine = this.scene.getPhysicsEngine();
-        physicsEngine.setGravity(new BABYLON.Vector3(0, -200, 0));
-
-        // Add Imposters
-        this.player.physicsImpostor = new BABYLON.PhysicsImpostor(this.player, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 2, restitution: 0 }, this.scene);
-
-        ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.1 }, this.scene);
-        ground.physicsImpostor.registerOnPhysicsCollide(this.player.physicsImpostor, function () {
-            if(!instance.gui.showinggui)
-            instance.gui.createGameOverScreen()
-        })
-
-        this.addObstaclesPhysics()
 
         this.createLights();
 
@@ -140,15 +127,23 @@ class LVL1 extends LVLAbstract {
         this.player.move = () => {
             if (this.player.position.y < -20) {
                 this.scene.activeCamera.lockedTarget = null
+                if(!instance.gui.showinggui)
+                this.gui.createGameOverScreen()
+
             }
 
             if (this.player.animationGroups != undefined) {
 
                 let idle = true;
                 this.waveMovingPlatforms();
+                this.collisionMovingPlatforms();
                 this.wavePickups();
                 this.contactPickups();
                 this.contactEndLevel();
+                if(!this.jumping){
+                    this.player.position.y = this.player.position.y-2.2
+                    this.player.animationGroups[1].play()
+                }
 
                 if (this.player.animationGroups[5]._isStarted == false)
                     this.isattacking = false;
@@ -179,7 +174,7 @@ class LVL1 extends LVLAbstract {
                         }
                         else {
                             if (this.jumping || this.gameconfig.jumpingstarted < 30) {
-                                this.player.moveWithCollisions(new BABYLON.Vector3(0, 1.2 * this.gameconfig.rollingAverage.average * this.player.speed, 0));
+                                this.player.moveWithCollisions(new BABYLON.Vector3(0, 2 * this.gameconfig.rollingAverage.average * this.player.speed, 0));
                                 this.player.lookAt(new BABYLON.Vector3(this.lookAt * 10000000, 0, 0));
                                 this.gameconfig.jumpingstarted++
                                 this.jumping = false;
@@ -324,9 +319,8 @@ class LVL1 extends LVLAbstract {
         obst.mesh = obj;
         obstt.push(obst)
 
-
+        obst = new MovingPlatform(10,50,60,-90, 125, 20, "y")
         //obst = new Obstacle(10, 50, 60)
-        obst = new Obstacle(10, 50, 60)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.y = 125;
         obj.position.x = -90;
