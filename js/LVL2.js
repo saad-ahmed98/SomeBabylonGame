@@ -1,6 +1,6 @@
-class LVL1 extends LVLAbstract {
+class LVL2 extends LVLAbstract {
     constructor(gameconfig) {
-        super(gameconfig,"lvl1");
+        super(gameconfig,"lvl2");
         this.gui.createTooltip("images/ControlsTooltip.png","400px","200px");
     }
 
@@ -119,6 +119,7 @@ class LVL1 extends LVLAbstract {
 
         let followCamera = this.createFollowCamera(150);
         this.scene.activeCamera = followCamera;
+        console.log(this.scene.activeCamera)
         this.scene.enablePhysics(null, new BABYLON.AmmoJSPlugin());
         var physicsEngine = this.scene.getPhysicsEngine();
         physicsEngine.setGravity(new BABYLON.Vector3(0, -200, 0));
@@ -324,9 +325,8 @@ class LVL1 extends LVLAbstract {
         obst.mesh = obj;
         obstt.push(obst)
 
-
+        obst = new MovingPlatform(10,50,60,-90, 125, 20, "y")
         //obst = new Obstacle(10, 50, 60)
-        obst = new Obstacle(10, 50, 60)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.y = 125;
         obj.position.x = -90;

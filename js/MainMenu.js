@@ -1,5 +1,4 @@
-import LVL1 from "./LVL1.js";
-export default class MainMenu  {
+class MainMenu  {
     constructor(gameconfig) {
         this.gameconfig=gameconfig;
         this.scene = new BABYLON.Scene(gameconfig.engine); 
@@ -29,7 +28,7 @@ createMainMenu() {
 
     newGame.onPointerUpObservable.add(function () {
         instance.gameconfig.createNewEngine()
-        new LVL1(instance.gameconfig);
+        new LVL2(instance.gameconfig);
     });
     
 

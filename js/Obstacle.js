@@ -1,4 +1,4 @@
-export default class Obstacle {
+class Obstacle {
     constructor(height,depth,width) {
         this.height = height;
         this.width = width;

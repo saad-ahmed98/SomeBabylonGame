@@ -1,6 +1,4 @@
-import Obstacle from "./Obstacle.js";
-
-export default class MovingPlatform extends Obstacle {
+class MovingPlatform extends Obstacle {
     constructor(height, depth, width, originalx, originaly, offset, where) {
         super(height, depth, width)
         this.offset = 20

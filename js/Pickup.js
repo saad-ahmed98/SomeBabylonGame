@@ -1,4 +1,4 @@
-export default class Pickup {
+class Pickup {
     constructor(originaly, offset, mesh) {
         this.originaly = originaly;
         this.offset = offset;

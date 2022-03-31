@@ -1,8 +1,4 @@
-import MovingPlatform from "./MovingPlatform.js";
-import LVLGUIController from "./LVLGUIController.js";
-
-
-export default class LVLAbstract {
+class LVLAbstract {
     constructor(gameconfig,lvl) {
         this.scene = new BABYLON.Scene(gameconfig.engine);
         this.player;

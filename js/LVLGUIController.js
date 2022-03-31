@@ -1,7 +1,4 @@
-import LVL1 from "./LVL1.js";
-import MainMenu from "./MainMenu.js";
-
-export default class LVLGUIController {
+class LVLGUIController {
     constructor(scene, gameconfig, level) {
         this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
         this.scene = scene;
@@ -34,6 +31,8 @@ export default class LVLGUIController {
             switch(instance.lvl){
                 case "lvl1":
                     newlvl = new LVL1(instance.gameconfig);
+                case "lvl2":
+                    newlvl = new LVL2(instance.gameconfig);
             }
         });
 
@@ -73,8 +72,11 @@ export default class LVLGUIController {
             instance.gameconfig.createNewEngine()
             switch(instance.lvl){
                 case "lvl1":
-                    //switch to lvl2, still unimplemented
-                    new LVL1(instance.gameconfig);
+                    //switch to lvl2
+                    new LVL2(instance.gameconfig);
+                case "lvl2":
+                    //switch to lvl3
+                    new LVL2(instance.gameconfig);
             }
         });
 

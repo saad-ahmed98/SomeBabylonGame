@@ -1,5 +1,4 @@
-
-export default class GameConfig{
+class GameConfig{
     constructor(canvas,divFps){
         this.canvas = canvas;
         this.engine = new BABYLON.Engine(canvas, true);

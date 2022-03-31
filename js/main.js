@@ -1,10 +1,3 @@
-
-import GameConfig from "./GameConfig.js";
-import MainMenu from "./MainMenu.js";
-
-
-
-
 window.onload = startGame;
 
 let gameconfig;
