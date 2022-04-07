@@ -2,6 +2,7 @@ class MainMenu  {
     constructor(gameconfig) {
         this.gameconfig=gameconfig;
         this.scene = new BABYLON.Scene(gameconfig.engine); 
+        this.gameconfig.scenes.push(this.scene)
         var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -10), this.scene);
         let menu=this;
         gameconfig.engine.runRenderLoop(() => {

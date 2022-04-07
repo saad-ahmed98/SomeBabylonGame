@@ -1,6 +1,8 @@
 class LVLAbstract {
     constructor(gameconfig, lvl) {
+        gameconfig.createNewEngine()
         this.scene = new BABYLON.Scene(gameconfig.engine);
+        gameconfig.scenes.push(this.scene)
         this.player;
         this.pickups;
         this.obstacles;

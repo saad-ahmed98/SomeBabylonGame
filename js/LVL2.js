@@ -175,7 +175,7 @@ class LVL2 extends LVLAbstract {
                             if (this.jumping || this.gameconfig.jumpingstarted < 30) {
                                 this.player.moveWithCollisions(new BABYLON.Vector3(0, 2 * this.gameconfig.rollingAverage.average * this.player.speed, 0));
                                 this.player.lookAt(new BABYLON.Vector3(this.lookAt * 10000000, 0, 0));
-                                this.gameconfig.jumpingstarted++
+                                this.gameconfig.updateJump()
                                 this.jumping = false;
                             }
                         }

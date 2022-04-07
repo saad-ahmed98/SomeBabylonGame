@@ -7,12 +7,20 @@ class GameConfig{
         this.modifySettings();
         this.jumpingstarted = 0;
         this.divFps = divFps;
+        this.jumpcounter = 1;
+        this.scenes = [];
     }
 
     createNewEngine(){
+        this.scenes[0].dispose()
+        //console.log(this.scenes)
         this.engine.dispose()
         this.engine = new BABYLON.Engine(this.canvas, true);
     }
+    updateJump(){
+        this.jumpingstarted+=this.jumpcounter;
+    }
+
 
     modifySettings() {
 
@@ -23,7 +31,6 @@ class GameConfig{
     this.inputStates.down = false;
     this.inputStates.space = false;
     this.inputStates.attack = false;
-
 
     //add the listener to the main, window object, and update the states
     window.addEventListener('keydown', (event) => {
@@ -48,7 +55,6 @@ class GameConfig{
         if ((event.key === "ArrowLeft") || (event.key === "q") || (event.key === "Q")) {
             this.inputStates.left = false;
         } else if ((event.key === "ArrowUp") || (event.key === "z") || (event.key === "Z")) {
-            this.jumpingstarted = 30;
 
             this.inputStates.up = false;
         } else if ((event.key === "ArrowRight") || (event.key === "d") || (event.key === "D")) {
@@ -56,6 +62,7 @@ class GameConfig{
         } else if ((event.key === "ArrowDown") || (event.key === "s") || (event.key === "S")) {
             this.inputStates.down = false;
         } else if (event.key === " ") {
+            this.jumpingstarted = 30;
             this.inputStates.space = false;
         }
         else if ((event.key === "e") || (event.key === "E")) {

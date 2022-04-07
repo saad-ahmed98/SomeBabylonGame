@@ -26,7 +26,6 @@ class LVLGUIController {
         retry.top = "70px;"
 
         retry.onPointerUpObservable.add(function () {
-            instance.gameconfig.createNewEngine()
             let newlvl;
             switch(instance.lvl){
                 case "lvl1":
