@@ -29,7 +29,7 @@ createMainMenu() {
 
     newGame.onPointerUpObservable.add(function () {
         instance.gameconfig.createNewEngine()
-        new LVL1(instance.gameconfig);
+        new LVL2(instance.gameconfig);
     });
     
 

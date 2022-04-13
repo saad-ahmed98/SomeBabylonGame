@@ -1,20 +1,61 @@
 class LVL2 extends LVLAbstract {
     constructor(gameconfig) {
         super(gameconfig,"lvl2");
-        this.gui.createTooltip("images/ControlsTooltip.png","400px","200px");
+        console.log("lvl2")
     }
 
     renderScene() {
         this.gameconfig.divFps.innerHTML = this.gameconfig.engine.getFps().toFixed() + " fps";
         this.gameconfig.rollingAverage.add(this.scene.getAnimationRatio());
-        this.player.move();
+        this.waveMovingPlatforms();
+        this.collisionObstacles();
+        this.verifyLifeEnemies();
+        this.collisionObstaclesEnemies();
+        this.collisionPlayerEnemies();
+        this.wavePickups();
+        this.contactPickups();
+        this.contactEndLevel();
+        this.moveEnemies();
+        if (this.player.mesh.position.y < -70) {
+            this.scene.activeCamera.lockedTarget = null
+            if (!this.gui.showinggui)
+                this.gui.createGameOverScreen()
+        }
+
+        this.player.move(this.scene.activeCamera,this.enemies);
+
+        if(this.player.hp<=0){
+            if (!this.gui.showinggui)
+                this.gui.createGameOverScreen()
+        }
+
         this.scene.render();
     }
 
     loadAssets() {
         this.loadPlayer();
+        this.loadEnemies();
         this.loadSounds();
-        this.loadBuildings();
+        //this.loadBuildings();
+    }
+
+    loadEnemies(){
+        var instance = this;
+        this.scene.assets.enemy1 = []
+        this.scene.assets.animations1 =[]
+        for(let i = 0;i<3;i++){
+        let meshTask = this.scene.assetsManager.addMeshTask(
+            "enemy1 task"+i,
+            "",
+            "models/",
+            "enemy1.gltf"
+        );
+
+        meshTask.onSuccess = function (task) {
+            instance.scene.assets.enemy1.push(task.loadedMeshes[1])
+            instance.scene.assets.animations1.push(task.loadedAnimationGroups)
+        };
+    }
     }
 
     loadBuildings() {
@@ -95,15 +136,12 @@ class LVL2 extends LVLAbstract {
         };
     }
 
+
     createScene() {
-        var instance = this;
-        let ground = this.createGround(this.scene);
-        const groundMaterial = new BABYLON.GridMaterial("groundMaterial", this.scene);
-        ground.material = groundMaterial;
+        this.createPlayer(-770, 400);
+        this.player.powers["walljump"] = true
 
-        this.createPlayer(-750, 20);
-
-        let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 1687.5, depth: 1, width: 3200 }, this.scene);
+        /*let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 1687.5, depth: 1, width: 3200 }, this.scene);
         skybox.position.y = 100;
         let skyboxmat = new BABYLON.StandardMaterial("skyboxmat", this.scene);
         skybox.material = skyboxmat;
@@ -111,254 +149,105 @@ class LVL2 extends LVLAbstract {
         skyboxmat.diffuseTexture = new BABYLON.Texture("images/skybox.jpg", this.scene);
 
         skybox.position.z = 500
+        */
 
         this.createObstacles();
         this.createPickups();
+        this.createEnemies();
+
         this.createEndLevel();
 
 
         let followCamera = this.createFollowCamera(150);
         this.scene.activeCamera = followCamera;
+        console.log(this.scene.activeCamera)
 
         this.createLights();
 
-
-        this.player.move = () => {
-            if (this.player.position.y < -20) {
-                this.scene.activeCamera.lockedTarget = null
-                if(!instance.gui.showinggui)
-                this.gui.createGameOverScreen()
-
-            }
-
-            if (this.player.animationGroups != undefined) {
-
-                let idle = true;
-                this.waveMovingPlatforms();
-                this.collisionMovingPlatforms();
-                this.wavePickups();
-                this.contactPickups();
-                this.contactEndLevel();
-                if(!this.jumping){
-                    this.player.position.y = this.player.position.y-2.2
-                    this.player.animationGroups[1].play()
-                }
-
-                if (this.player.animationGroups[5]._isStarted == false)
-                    this.isattacking = false;
-
-                if (this.gameconfig.inputStates.space) {
-                    idle = false
-                    if (this.walljumpingleft && this.walljump < 25 && this.haswalljump) {
-                        if (this.walljump < 15)
-                            this.gameconfig.inputStates.right = false;
-                        this.player.moveWithCollisions(new BABYLON.Vector3(-0.7 * this.gameconfig.rollingAverage.average * this.player.speed, 0, 0));
-                        this.player.moveWithCollisions(new BABYLON.Vector3(0, 2 * this.gameconfig.rollingAverage.average * this.player.speed, 0));
-                        this.player.lookAt(new BABYLON.Vector3(-10000000, 0, 0));
-                        followCamera.rotationOffset = -90
-                        this.lookAt = -1
-                        this.walljump++;
-
-                    }
-                    else {
-                        if (this.walljumpingright && this.walljump < 25 && this.haswalljump) {
-                            if (this.walljump < 15)
-                                this.gameconfig.inputStates.left = false;
-                            this.player.moveWithCollisions(new BABYLON.Vector3(0.7 * this.gameconfig.rollingAverage.average * this.player.speed, 0, 0));
-                            this.player.moveWithCollisions(new BABYLON.Vector3(0, 2 * this.gameconfig.rollingAverage.average * this.player.speed, 0));
-                            this.player.lookAt(new BABYLON.Vector3(10000000, 0, 0));
-                            followCamera.rotationOffset = 90
-                            this.lookAt = 1
-                            this.walljump++;
-                        }
-                        else {
-                            if (this.jumping || this.gameconfig.jumpingstarted < 30) {
-                                this.player.moveWithCollisions(new BABYLON.Vector3(0, 2 * this.gameconfig.rollingAverage.average * this.player.speed, 0));
-                                this.player.lookAt(new BABYLON.Vector3(this.lookAt * 10000000, 0, 0));
-                                this.gameconfig.updateJump()
-                                this.jumping = false;
-                            }
-                        }
-                    }
-                    this.player.animationGroups[1].play()
-                }
-                if (this.gameconfig.inputStates.up) {
-                }
-                if (this.gameconfig.inputStates.down) {
-
-                }
-                if (this.gameconfig.inputStates.left) {
-                    idle = false
-
-                    this.player.moveWithCollisions(new BABYLON.Vector3(-1 * this.gameconfig.rollingAverage.average * this.player.speed, 0, 0));
-                    this.player.lookAt(new BABYLON.Vector3(-10000000, 0, 0));
-                    followCamera.rotationOffset = -90
-                    this.lookAt = -1
-                    if (this.jumping && !this.isattacking)
-                        this.player.animationGroups[4].play()
-                }
-                if (this.gameconfig.inputStates.right) {
-                    idle = false
-
-                    this.player.moveWithCollisions(new BABYLON.Vector3(1 * this.gameconfig.rollingAverage.average * this.player.speed, 0, 0));
-                    this.player.lookAt(new BABYLON.Vector3(10000000, 0, 0));
-                    followCamera.rotationOffset = 90
-                    this.lookAt = 1
-                    if (this.jumping && !this.isattacking)
-                        this.player.animationGroups[4].play()
-
-                }
-
-                if (this.gameconfig.inputStates.attack) {
-                    idle = false
-                    if (!this.isattacking) {
-                        this.isattacking = true;
-                        this.player.animationGroups[5].play()
-                        //swingSword(this.scene,this.player)
-                    }
-                }
-
-                if (idle && this.walljump && this.jumping) {
-                    for (let i = 0; i < this.player.animationGroups; i++) {
-                        this.player.animationGroups[i].stop()
-                    }
-                    this.player.animationGroups[2].play(true)
-                }
-            }
-        }
         return this.scene;
     }
 
     contactEndLevel() {
-        if (Math.abs(this.endlvl.position.x -this.player.position.x) <= 10 && Math.abs(this.endlvl.position.y -this.player.position.y) <= 10) {
-            if(!this.gui.showinggui)
-            this.gui.createLevelClearScreen()
+        if (Math.abs(this.endlvl.position.x - this.player.mesh.position.x) <= 10 && Math.abs(this.endlvl.position.y - this.player.mesh.position.y) <= 10) {
+            if (!this.gui.showinggui)
+                this.gui.createLevelClearScreen()
         }
     }
 
+    createEnemies(){
+
+        //hitbox
+        var enemy = new Enemy(25,20,5,0.2,this.player,-700,20,20)
+        enemy.createEnemy1(this.scene)
+        this.enemies.push(enemy)
+
+        enemy = new Enemy(25,20,5,0.2,this.player,-600,20,20)
+        enemy.createEnemy1(this.scene)
+        this.enemies.push(enemy)
+    }
+
+
     createPickups() {
         this.pickups = [];
-
-        var obj = new BABYLON.Mesh.CreateDisc("", 5, 64, this.scene);
-        var objmat = new BABYLON.StandardMaterial("", this.scene);
-        objmat.diffuseTexture = new BABYLON.Texture("images/walljump.png", this.scene);
-        obj.material = objmat;
-        obj.position.y = 12;
-        obj.position.x = 500;
-
-        var pickup = new Pickup(obj.position.y, 2, obj)
+        var pickup = new Pickup(-770, 10, 2)
+        pickup.createSword(this.scene)
         this.pickups.push(pickup);
-
-        /*var particleSystem = new BABYLON.ParticleSystem("particles", 10, this.scene);
-        particleSystem.maxScaleX = 2;
-        particleSystem.maxScaleY = 2;
-    
-    
-        var noiseTexture = new BABYLON.NoiseProceduralTexture("perlin", 256, this.scene);
-        noiseTexture.animationSpeedFactor = 5;
-        noiseTexture.persistence = 2;
-        noiseTexture.brightness = 0.5;
-        noiseTexture.octaves = 2;
-        particleSystem.noiseTexture = noiseTexture;
-        particleSystem.noiseStrength = new BABYLON.Vector3(100, 100, 100);
-        particleSystem.particleTexture = new BABYLON.Texture("images/flare.png");
-        particleSystem.emitter = pickup.mesh;
-        particleSystem.start();
-        */
-
     }
 
 
     createObstacles() {
         var obstt = []
         var obj;
-        var obst = new Obstacle(100, 100, 300)
+        var obst = new Obstacle(100, 100, 350)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.y = -50;
         obj.position.x = -650;
         obst.mesh = obj;
-        obj.visibility = 0;
-        let building = this.scene.assets.twostorywide.clone("building1");
-        building.parent = obj;
-        building.scaling.x = 80;
-        building.scaling.y = 50;
-        building.scaling.z = 80;
-        building.rotation = new BABYLON.Vector3(0, 3.15, 0);
-        building.position.y = -78;
-
         obstt.push(obst)
 
-        obst = new Obstacle(180, 100, 200)
+        var obst = new Obstacle(150, 100, 500)
+        obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
+        obj.position.y = 150;
+        obj.position.x = -650;
+        obst.mesh = obj;
+        obstt.push(obst)
+
+        var obst = new Obstacle(200, 100, 300)
+        obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
+        obj.position.y = 370;
+        obj.position.x = -600;
+        obst.mesh = obj;
+        obstt.push(obst)
+
+        obst = new Obstacle(1000, 100, 600)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.y = -55;
-        obj.position.x = -355;
+        obj.position.x = -1100;
         obst.mesh = obj;
-        obj.visibility = 0;
-
-        building = this.scene.assets.twostorywide.clone("building2");
-        building.parent = obj;
-        building.scaling.x = 55;
-        building.scaling.y = 50;
-        building.scaling.z = 55;
-        building.rotation = new BABYLON.Vector3(0, 3.15, 0);
-        building.position.y = -38;
         obstt.push(obst)
 
-        obst = new Obstacle(10, 50, 60)
+        obst = new MovingPlatform(10, 50, 60, -300, 130, 130, "y",1.2)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
-        obj.position.y = 65;
-        obj.position.x = -250;
+        obj.position.y = 130;
+        obj.position.x = -300;
         obst.mesh = obj;
         obstt.push(obst)
 
-        obst = new Obstacle(10, 50, 60)
+        obst = new MovingPlatform(10, 50, 60, -300, 150, 110, "x",1.5)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
-        obj.position.y = 95;
-        obj.position.x = -170;
+        obj.position.y = 0;
+        obj.position.x = -400;
         obst.mesh = obj;
         obstt.push(obst)
+        
 
-        obst = new MovingPlatform(10,50,60,-90, 125, 20, "y")
-        //obst = new Obstacle(10, 50, 60)
-        obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
-        obj.position.y = 125;
-        obj.position.x = -90;
-        obst.mesh = obj;
-        obstt.push(obst)
-
-        obst = new Obstacle(80, 100, 200)
-        obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
-        obj.position.y = -40;
-        obj.position.x = -100;
-        obst.mesh = obj;
-        obj.visibility = 0;
-
-        building = this.scene.assets.fourstorycenter.clone("building3");
-        building.parent = obj;
-        building.scaling.x = 70;
-        building.scaling.y = 60;
-        building.scaling.z = 65;
-        building.rotation = new BABYLON.Vector3(0, 3.15, 0);
-        building.position.y = -255;
-        building.position.x = -15;
-
-
-        obstt.push(obst)
 
         obst = new Obstacle(320, 100, 130)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.y = -40;
         obj.position.x = 35;
         obst.mesh = obj;
-        obj.visibility = 0;
 
-        building = this.scene.assets.fourstorycenter.clone("building4");
-        building.parent = obj;
-        building.scaling.x = 55;
-        building.scaling.y = 45;
-        building.scaling.z = 50;
-        building.rotation = new BABYLON.Vector3(0, 3.15, 0);
-        building.position.y = -62;
         obstt.push(obst)
 
         obst = new Obstacle(10, 70, 100)
@@ -375,14 +264,6 @@ class LVL2 extends LVLAbstract {
         obj.position.y = -50;
         obj.position.x = 500;
         obst.mesh = obj;
-        obj.visibility = 0;
-        building = this.scene.assets.twostorywide.clone("building5");
-        building.parent = obj;
-        building.scaling.x = 80;
-        building.scaling.y = 50;
-        building.scaling.z = 80;
-        building.rotation = new BABYLON.Vector3(0, 3.15, 0);
-        building.position.y = -78;
 
         obstt.push(obst)
 
@@ -399,14 +280,6 @@ class LVL2 extends LVLAbstract {
         obj.position.x = 830;
         obst.mesh = obj;
 
-        obj.visibility = 0;
-        building = this.scene.assets.buildingtwolarge.clone("building5");
-        building.parent = obj;
-        building.scaling.x = 52;
-        building.scaling.y = 52;
-        building.scaling.z = 30;
-        building.rotation = new BABYLON.Vector3(0, 3.15, 0);
-        building.position.y = -147;
 
         obstt.push(obst)
 

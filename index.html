@@ -1,35 +1,40 @@
 <html>
-    <head>
+
+<head>
     <title>SomeBabylonGame</title>
     <meta charset="UTF-8">
-        <link rel="stylesheet" href="css/default.css">
-        <!-- Babylon.js -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
-        <script src="https://preview.babylonjs.com/babylon.js"></script>
-        <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
-        <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
-        <script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
-        <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
-        <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
-        <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
-        <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+    <link rel="stylesheet" href="css/default.css">
+    <!-- Babylon.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+    <script src="https://preview.babylonjs.com/babylon.js"></script>
+    <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+    <script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+    <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+    <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+    <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
 
-        <script  src="js/GameConfig.js"></script>
-        <script  src="js/LVLAbstract.js"></script>
-        <script src="js/LVL1.js"></script>
-        <script src="js/LVL2.js"></script>
-        <script src="js/LVLGUIController.js"></script>
-        <script src="js/MainMenu.js"></script>
-        <script src="js/Obstacle.js"></script>
-        <script src="js/Pickup.js"></script>
-        <script src="js/MovingPlatform.js"></script>
-        <script src="js/main.js"></script>
+    <script src="js/GameConfig.js"></script>
+    <script src="js/Personnage.js"></script>
+    <script src="js/Player.js"></script>
+    <script src="js/LVLAbstract.js"></script>
+    <script src="js/LVL1.js"></script>
+    <script src="js/LVL2.js"></script>
+    <script src="js/LVLGUIController.js"></script>
+    <script src="js/MainMenu.js"></script>
+    <script src="js/Obstacle.js"></script>
+    <script src="js/Pickup.js"></script>
+    <script src="js/MovingPlatform.js"></script>
+    <script src="js/Enemy.js"></script>
+
+
+    <script src="js/main.js"></script>
 
 
 
 
-
-        <style>
+    <style>
         #fps {
             position: absolute;
             background-color: black;
@@ -42,10 +47,12 @@
             width: 60px;
             height: 20px;
         }
-</style>
-    </head>
-    <body>
-        <div id="fps">0</div>
-        <canvas id="myCanvas" width=1600 height=1200></canvas>
-    </body>
+    </style>
+</head>
+
+<body>
+    <div id="fps">0</div>
+    <canvas id="myCanvas" width=1600 height=1200></canvas>
+</body>
+
 </html>
