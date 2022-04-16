@@ -7,13 +7,12 @@ Ceci est un jeu plateforme action en cours de développement pour le concours **
 * **e** pour attaquer.
 
 ## Etat d'avancement
-Actuellement, un premier niveau est presque complet.  
-Un deuxième niveau sera crée prochainement.
+Actuellement, trois niveau sont complets mais graphiquement ils ne sont pas au points (il y a plein de cubes partout)
 
 ## Code
 Certaines remarques :
 * Pour pallier les problèmes de framerate qui changent la vitesse du joueur, nous avons une variable qui modifie la vitesse des mouvements par rapport aux fps.
-* Toutes les collisions avec les plateformes sont effectuées avec le moteur physique AmmoJS. Nous détectons les collisions manuellement pour la fin de niveau et les pickup (vie, pouvoirs) éventuels.
+* Les collisions avec les plateformes sont calculées manuellement pour permettre d'effectuer des mouvements dignes d'un platformer.
 * Le personnage principale a été créé sur Blender puis animé avec Mixamo.
 
 ## Démo
