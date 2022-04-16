@@ -167,9 +167,8 @@ class LVLAbstract {
             if (!this.pickups[i].dead) {
                 if (Math.abs(this.pickups[i].mesh.position.x - this.player.mesh.position.x) <= 10 && Math.abs(this.pickups[i].mesh.position.y - this.player.mesh.position.y) <= 10) {
 
-                    this.gui.createTooltip(this.pickups[i].tooltipimage, "700px", "200px");
+                    this.gui.createTooltip(this.pickups[i].tooltipimage,this.pickups[i].width, this.pickups[i].height);
                     this.pickups[i].activateEffect(this.player)
-                    //this.player.haswalljump = true;
                     this.pickups[i].mesh.dispose();
                     this.pickups[i].dead = true;
                 }
@@ -221,6 +220,9 @@ class LVLAbstract {
         this.player.mesh = playerbox
         this.player.swordmesh = mesh.getChildren()[0].getChildren()[3].getChildren()[0].getChildren()[0].getChildren()[0]
         this.player.swordmesh.setEnabled(false)
+
+        this.player.addHPBar(this.scene)
+        this.player.updateHpBar()
 
     }
 

@@ -160,7 +160,6 @@ class LVL2 extends LVLAbstract {
 
         let followCamera = this.createFollowCamera(150);
         this.scene.activeCamera = followCamera;
-        console.log(this.scene.activeCamera)
 
         this.createLights();
 
@@ -283,10 +282,10 @@ class LVL2 extends LVLAbstract {
         obst.mesh = obj;
         obstt.push(obst)
 
-        obst = new MovingPlatform(10, 50, 60, 0, 30, 120, "x",0.7)
+        obst = new MovingPlatform(10, 50, 60, -10, 30, 90, "x",0.7)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.y = 30;
-        obj.position.x = 0;
+        obj.position.x = -10;
         obst.mesh = obj;
         obstt.push(obst)
         

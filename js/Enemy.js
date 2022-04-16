@@ -5,8 +5,7 @@ class Enemy extends Personnage {
         this.originalx = originalx
         this.offset = offset
         this.direction = 1;
-        this.originaly = originaly
-        this.healthBar;
+        this.originaly = originaly        
         this.hptot = hp
         this.alert = false
         this.attackdmg = 0
@@ -25,39 +24,12 @@ class Enemy extends Personnage {
     }
 
     updateHpBar() {
-        var healthBar = this.healthBar.getChildren()[0]
-        var healthBarText = this.healthBar.getChildren()[1]
-        if (this.hp <= 0) {
+        if (this.hp <= 0)
             this.hp = 0;
-        }
 
         if (this.hp >= 0) {
-            healthBar.scaling.x = this.hp / this.hptot;
-            healthBar.position.x = (1 - (this.hp / this.hptot)) * -1;
-
-            if (healthBar.scaling.x < .3) {
-                healthBar.material.diffuseColor = BABYLON.Color3.Red();
-            }
-            else if (healthBar.scaling.x < .5) {
-                healthBar.material.diffuseColor = BABYLON.Color3.Yellow();
-            }
-
-            var textureContext = healthBarText.material.diffuseTexture.getContext();
-            var size = healthBarText.material.diffuseTexture.getSize();
-            var text = this.hp + "/" + this.hptot;
-            if (this.hp == 0) {
-                healthBarText.material.diffuseColor = BABYLON.Color3.Red();
-                text = "DEAD"
-            }
-
-            textureContext.clearRect(0, 0, size.width, size.height);
-
-            textureContext.font = "bold 120px Calibri";
-            var textSize = textureContext.measureText(text);
-            textureContext.fillStyle = "white";
-            textureContext.fillText(text, (size.width - textSize.width) / 2, (size.height - 120) / 2);
-
-            healthBarText.material.diffuseTexture.update();
+            this.healthBar.scaling.x = this.hp / this.hptot;
+            this.healthBar.position.x = (1 - (this.hp / this.hptot)) * -1;
         }
     }
 
@@ -96,40 +68,23 @@ class Enemy extends Personnage {
 
     addHPBar(scene) {
         var healthBarMaterial = new BABYLON.StandardMaterial("hb1mat", scene);
-        healthBarMaterial.diffuseColor = BABYLON.Color3.Green();
+        healthBarMaterial.diffuseColor = BABYLON.Color3.Red();
         healthBarMaterial.backFaceCulling = false;
 
-        var healthBarContainerMaterial = new BABYLON.StandardMaterial("hb2mat", scene);
-        healthBarContainerMaterial.diffuseColor = BABYLON.Color3.Blue();
-        healthBarContainerMaterial.backFaceCulling = false;
 
         var dynamicTexture = new BABYLON.DynamicTexture("dt1", 512, scene, true);
         dynamicTexture.hasAlpha = true;
 
-        var healthBarTextMaterial = new BABYLON.StandardMaterial("hb3mat", scene);
-        healthBarTextMaterial.diffuseTexture = dynamicTexture;
-        healthBarTextMaterial.backFaceCulling = false;
-        healthBarTextMaterial.diffuseColor = BABYLON.Color3.Black();
-        var healthBar = BABYLON.MeshBuilder.CreatePlane("hb1", { width: 20, height: 5, subdivisions: 4 }, scene);
-        var healthBarContainer = BABYLON.MeshBuilder.CreatePlane("hb2", { width: 20, height: 5, subdivisions: 4 }, scene);
-        var healthBarText = BABYLON.MeshBuilder.CreatePlane("hb3", { width: 20, height: 20, subdivisions: 4 }, scene);
+        var healthBar = BABYLON.MeshBuilder.CreatePlane("hb1", { width: 15, height: 3, subdivisions: 4 }, scene);
 
-        healthBar.position = new BABYLON.Vector3(0, 0, -.01);			// Move in front of container slightly.  Without this there is flickering.
-        healthBarContainer.position = new BABYLON.Vector3(0, 17, 0);     // Position above player.
-        healthBarText.position = new BABYLON.Vector3(0, -3.5, -.1);
+        healthBar.position = new BABYLON.Vector3(0, 17, 0);     // Position above player.
 
-        healthBar.parent = healthBarContainer;
-        healthBarContainer.parent = this.mesh;
-        healthBarText.parent = healthBarContainer;
-        healthBarContainer.rotation = new BABYLON.Vector3(0, 2, 0);
+        healthBar.parent = this.mesh;
+        healthBar.rotation = new BABYLON.Vector3(0, 2, 0);
 
-        this.healthBar = healthBarContainer
-
-
+        this.healthBar = healthBar
 
         healthBar.material = healthBarMaterial;
-        healthBarContainer.material = healthBarContainerMaterial;
-        healthBarText.material = healthBarTextMaterial;
     }
 
     move() {

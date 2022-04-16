@@ -8,6 +8,8 @@ class Pickup {
         this.dead = false;
         this.tag = ""
         this.tooltipimage = ""
+        this.width = ""
+        this.height = ""
     }
 
     createWalljump(scene){
@@ -20,6 +22,8 @@ class Pickup {
         this.mesh = obj
         this.tag = "walljump"
         this.tooltipimage = "images/WallJumpTooltip.png"
+        this.width = "700px"
+        this.height = "196px"
     }
 
     createSword(scene){
@@ -31,7 +35,9 @@ class Pickup {
         obj.position.x = this.originalx;
         this.mesh = obj
         this.tag = "sword"
-        this.tooltipimage = "images/WallJumpTooltip.png"
+        this.tooltipimage = "images/SwordTooltip.png"
+        this.width = "400px"
+        this.height = "153px"
 
     }
 
@@ -45,7 +51,9 @@ class Pickup {
         obj.position.x = this.originalx;
         this.mesh = obj
         this.tag = "hp"
-        this.tooltipimage = "images/WallJumpTooltip.png"
+        this.tooltipimage = "images/HPTooltip.png"
+        this.width = "400px"
+        this.height = "153px"
     }
 
     activateEffect(player){
@@ -59,10 +67,9 @@ class Pickup {
                 break
             case "hp":
                 player.gameconfig.stats["hp"] +=2
-                console.log(player.gameconfig.stats)
-                console.log(player.gameconfig.statsprev)
 
                 player.hp+=2
+                player.updateHpBar()
                 break
         }
     }

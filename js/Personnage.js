@@ -6,7 +6,7 @@ class Personnage {
         this.hp = hp
         this.speed = speed
         this.animationGroups
-        
+        this.healthBar;
         this.isattacking = false;
 
     }
