@@ -14,6 +14,7 @@ class Player extends Personnage {
     }
 
     updateWeapon(){
+        if(this.gameconfig.stats["weapon"]=="sword")
         this.swordmesh.setEnabled(true)
     }
 
@@ -119,15 +120,15 @@ class Player extends Personnage {
             this.mesh.moveWithCollisions(new BABYLON.Vector3(1 * this.gameconfig.rollingAverage.average * this.speed, 0, 0));
             if(!this.isattacking){
             this.lookAt = 1
-            followCamera.rotationOffset = -90
+            followCamera.rotationOffset = 90
 
             }
             this.mesh.lookAt(new BABYLON.Vector3(10000000*this.lookAt, 0, 0));
             this.healthBar.lookAt(new BABYLON.Vector3(10000000 * -this.lookAt, 0, 0));
             this.healthBar.position = new BABYLON.Vector3(10, 17, 0); 
 
-
-            followCamera.rotationOffset = 90
+            if(this.isattacking)
+                followCamera.rotationOffset = 90*this.lookAt
 
             if (this.jumping && !this.isattacking)
                 this.animationGroups[4].play()

@@ -65,7 +65,7 @@ class LVLAbstract {
 
     verifyLifeEnemies() {
         for (let i = 0; i < this.enemies.length; i++) {
-            if (this.enemies[i].hp <= 0) {
+            if (this.enemies[i].hp == -999) {
                 this.enemies.splice(i, 1)
                 i--
             }
@@ -85,26 +85,28 @@ class LVLAbstract {
 
     collisionPlayerEnemies() {
         for (let i = 0; i < this.enemies.length; i++) {
-            var val = this.player.width / 2 - 2
-            if (this.player.mesh.position.x < this.enemies[i].xright() + val && this.player.mesh.position.x > this.enemies[i].xleft() - val) {
-                let posup = this.player.mesh.position.y - 5 - this.enemies[i].yup()
-                let posdown = this.player.mesh.position.y + 5 - this.enemies[i].ydown()
-                let posleft = this.player.mesh.position.x - 3 - this.enemies[i].xleft()
-                let posright = this.player.mesh.position.x + 3 - this.enemies[i].xright()
+            if (this.enemies[i].hp > 0) {
+                var val = this.player.width / 2 - 2
+                if (this.player.mesh.position.x < this.enemies[i].xright() + val && this.player.mesh.position.x > this.enemies[i].xleft() - val) {
+                    let posup = this.player.mesh.position.y - 5 - this.enemies[i].yup()
+                    let posdown = this.player.mesh.position.y + 5 - this.enemies[i].ydown()
+                    let posleft = this.player.mesh.position.x - 3 - this.enemies[i].xleft()
+                    let posright = this.player.mesh.position.x + 3 - this.enemies[i].xright()
 
-                if (posleft < 0 && this.player.mesh.position.y - 5 < this.enemies[i].yup() && this.player.mesh.position.y + 5 > this.enemies[i].ydown()) {
-                    this.player.mesh.position.x = this.enemies[i].mesh.position.x - this.enemies[i].width / 2 - val
-                }
-                else if (posright > 0 && this.player.mesh.position.y - 5 < this.enemies[i].yup() && this.player.mesh.position.y + 5 > this.enemies[i].ydown()) {
-                    this.player.mesh.position.x = this.enemies[i].mesh.position.x + this.enemies[i].width / 2 + val
-                }
-                else if (this.player.mesh.position.x < this.enemies[i].xright() && this.player.mesh.position.x > this.enemies[i].xleft()) {
-                    if (posdown < 0) {
+                    if (posleft < 0 && this.player.mesh.position.y - 5 < this.enemies[i].yup() && this.player.mesh.position.y + 5 > this.enemies[i].ydown()) {
+                        this.player.mesh.position.x = this.enemies[i].mesh.position.x - this.enemies[i].width / 2 - val
                     }
-                    else if (posup < 2) {
-                        this.player.mesh.position.y = 5 + this.enemies[i].mesh.position.y + this.enemies[i].height / 2
+                    else if (posright > 0 && this.player.mesh.position.y - 5 < this.enemies[i].yup() && this.player.mesh.position.y + 5 > this.enemies[i].ydown()) {
+                        this.player.mesh.position.x = this.enemies[i].mesh.position.x + this.enemies[i].width / 2 + val
                     }
+                    else if (this.player.mesh.position.x < this.enemies[i].xright() && this.player.mesh.position.x > this.enemies[i].xleft()) {
+                        if (posdown < 0) {
+                        }
+                        else if (posup < 2) {
+                            this.player.mesh.position.y = 5 + this.enemies[i].mesh.position.y + this.enemies[i].height / 2
+                        }
 
+                    }
                 }
             }
         }
@@ -145,6 +147,10 @@ class LVLAbstract {
                         }
                     }
                     else if (posup < 2) {
+                        if (this.obstacles[i] instanceof Elevator) {
+                            if (!this.obstacles[i].hasStarted)
+                                this.obstacles[i].start()
+                        }
                         found = true;
                         this.player.mesh.position.y = 5 + this.obstacles[i].mesh.position.y + this.obstacles[i].height / 2
                         this.player.walljumpingleft = false;
@@ -167,7 +173,7 @@ class LVLAbstract {
             if (!this.pickups[i].dead) {
                 if (Math.abs(this.pickups[i].mesh.position.x - this.player.mesh.position.x) <= 10 && Math.abs(this.pickups[i].mesh.position.y - this.player.mesh.position.y) <= 10) {
 
-                    this.gui.createTooltip(this.pickups[i].tooltipimage,this.pickups[i].width, this.pickups[i].height);
+                    this.gui.createTooltip(this.pickups[i].tooltipimage, this.pickups[i].width, this.pickups[i].height);
                     this.pickups[i].activateEffect(this.player)
                     this.pickups[i].mesh.dispose();
                     this.pickups[i].dead = true;

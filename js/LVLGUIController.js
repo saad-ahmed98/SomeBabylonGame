@@ -35,6 +35,9 @@ class LVLGUIController {
                 case "lvl2":
                     newlvl = new LVL2(instance.gameconfig);
                     break
+                case "lvl3":
+                    newlvl = new LVL3(instance.gameconfig);
+                    break
             }
         });
 
@@ -81,7 +84,11 @@ class LVLGUIController {
                     break
                 case "lvl2":
                     //switch to lvl3
-                    new LVL2(instance.gameconfig);
+                    new LVL3(instance.gameconfig);
+                    break
+                case "lvl3":
+                    //switch to lvl3
+                    new LVL3(instance.gameconfig);
                     break
             }
         });

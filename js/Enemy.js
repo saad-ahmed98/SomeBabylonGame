@@ -19,17 +19,19 @@ class Enemy extends Personnage {
             this.animationGroups[1].play()
             setTimeout(() => {
                 instance.mesh.dispose()
-            }, 1800)
+                instance.hp = -999
+            }, 1400)
         }
     }
 
     updateHpBar() {
-        if (this.hp <= 0)
-            this.hp = 0;
+        var hpbar = this.hp
+        if (hpbar <= 0)
+            hpbar = 0;
 
-        if (this.hp >= 0) {
-            this.healthBar.scaling.x = this.hp / this.hptot;
-            this.healthBar.position.x = (1 - (this.hp / this.hptot)) * -1;
+        if (hpbar >= 0) {
+            this.healthBar.scaling.x = hpbar / this.hptot;
+            this.healthBar.position.x = (1 - (hpbar / this.hptot)) * -1;
         }
     }
 
@@ -66,6 +68,39 @@ class Enemy extends Personnage {
         this.attackdmg = 1
     }
 
+    createEnemy2(scene) {
+        var box = new BABYLON.MeshBuilder.CreateBox("", { height: this.height, depth: this.width, width: 5 }, scene);
+        box.position.x = this.originalx;
+        box.position.y = this.originaly;
+        box.lookAt(new BABYLON.Vector3(10, 0, 0));
+        box.visibility = 0;
+
+        box.frontVector = new BABYLON.Vector3(0, 0, 1);
+
+        //actual character
+        var mesh = scene.assets.enemy2.pop();
+        mesh.name = "";
+
+        mesh.parent = box;
+        mesh.position.x = 0;
+        mesh.position.z = 0;
+        mesh.position.y = -5;
+        mesh.scaling.x = 3.5;
+        mesh.scaling.z = 3.5;
+        mesh.scaling.y = 3.5;
+        mesh.rotation = new BABYLON.Vector3(0, 0, 0);
+
+        //mesh._scene.animationGroups[2].play(true)
+
+        this.animationGroups = scene.assets.animations2.pop();
+        this.animationGroups[5].play(true)
+        this.mesh = box
+        this.attackdmg = 2
+
+        this.addHPBar(scene)
+        this.updateHpBar()
+    }
+
     addHPBar(scene) {
         var healthBarMaterial = new BABYLON.StandardMaterial("hb1mat", scene);
         healthBarMaterial.diffuseColor = BABYLON.Color3.Red();
@@ -76,8 +111,11 @@ class Enemy extends Personnage {
         dynamicTexture.hasAlpha = true;
 
         var healthBar = BABYLON.MeshBuilder.CreatePlane("hb1", { width: 15, height: 3, subdivisions: 4 }, scene);
-
-        healthBar.position = new BABYLON.Vector3(0, 17, 0);     // Position above player.
+       // healthBar.position = new BABYLON.Vector3(0, 17, 0);     // Position above player.
+        var pos = 17
+        if(this.attackdmg==2)
+            pos = 22
+        healthBar.position = new BABYLON.Vector3(0, pos, 0); 
 
         healthBar.parent = this.mesh;
         healthBar.rotation = new BABYLON.Vector3(0, 2, 0);
@@ -132,6 +170,7 @@ class Enemy extends Personnage {
         }
         else {
             this.mesh.position.x = this.mesh.position.x + (1 * this.speed * 3 * this.direction);
+            if(this.hp>0)
             this.animationGroups[11].play()
         }
     }
@@ -145,8 +184,11 @@ class Enemy extends Personnage {
 
         this.mesh.lookAt(new BABYLON.Vector3(this.direction * 10000000, 0, 0));
         this.healthBar.lookAt(new BABYLON.Vector3(10000000 * -this.direction, 0, 0));
-
-        this.animationGroups[15].play()
+        var anim = 15
+        if(this.attackdmg==2)
+            anim = 16
+        if(this.hp>0)
+        this.animationGroups[anim].play()
 
     }
 
@@ -159,12 +201,13 @@ class Enemy extends Personnage {
 
     attack() {
         var instance = this
+        if(this.hp>0)
         this.animationGroups[10].play()
 
         setTimeout(() => {
             instance.isattacking = false
             instance.checkHit()
-        }, 1000)
+        }, 500)
     }
 
 }
