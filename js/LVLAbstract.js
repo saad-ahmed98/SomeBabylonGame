@@ -4,7 +4,7 @@ class LVLAbstract {
         this.scene = new BABYLON.Scene(gameconfig.engine);
         gameconfig.scenes.push(this.scene)
         this.player;
-        this.pickups;
+        this.pickups = [];
         this.obstacles;
         this.endlvl;
         this.gameconfig = gameconfig;
@@ -63,40 +63,51 @@ class LVLAbstract {
         }
     }
 
-    verifyLifeEnemies(){
-        for(let i = 0;i<this.enemies.length;i++){
-            if(this.enemies[i].hp<=0){
+    verifyLifeEnemies() {
+        for (let i = 0; i < this.enemies.length; i++) {
+            if (this.enemies[i].hp <= 0) {
                 this.enemies.splice(i, 1)
                 i--
+            }
+        }
+
+        for (let i = 0; i < this.obstacles.length; i++) {
+            if (this.obstacles[i] instanceof CheckpointObstacle) {
+                this.obstacles[i].verifyLifeEnemies()
+                if (this.obstacles[i].enemies.length == 0) {
+                    this.obstacles[i].mesh.dispose()
+                    this.obstacles.splice(i, 1)
+                    i--
+                }
             }
         }
     }
 
     collisionPlayerEnemies() {
-            for (let i = 0; i < this.enemies.length; i++) {
-                var val = this.player.width/2-2
-                if (this.player.mesh.position.x < this.enemies[i].xright() + val && this.player.mesh.position.x > this.enemies[i].xleft() - val) {
-                    let posup = this.player.mesh.position.y - 5 - this.enemies[i].yup()
-                    let posdown = this.player.mesh.position.y + 5 - this.enemies[i].ydown()
-                    let posleft = this.player.mesh.position.x - 3 - this.enemies[i].xleft()
-                    let posright = this.player.mesh.position.x + 3 - this.enemies[i].xright()
+        for (let i = 0; i < this.enemies.length; i++) {
+            var val = this.player.width / 2 - 2
+            if (this.player.mesh.position.x < this.enemies[i].xright() + val && this.player.mesh.position.x > this.enemies[i].xleft() - val) {
+                let posup = this.player.mesh.position.y - 5 - this.enemies[i].yup()
+                let posdown = this.player.mesh.position.y + 5 - this.enemies[i].ydown()
+                let posleft = this.player.mesh.position.x - 3 - this.enemies[i].xleft()
+                let posright = this.player.mesh.position.x + 3 - this.enemies[i].xright()
 
-                    if (posleft < 0 && this.player.mesh.position.y - 5 < this.enemies[i].yup() && this.player.mesh.position.y + 5 > this.enemies[i].ydown()) {
-                        this.player.mesh.position.x = this.enemies[i].mesh.position.x - this.enemies[i].width / 2 - val
+                if (posleft < 0 && this.player.mesh.position.y - 5 < this.enemies[i].yup() && this.player.mesh.position.y + 5 > this.enemies[i].ydown()) {
+                    this.player.mesh.position.x = this.enemies[i].mesh.position.x - this.enemies[i].width / 2 - val
+                }
+                else if (posright > 0 && this.player.mesh.position.y - 5 < this.enemies[i].yup() && this.player.mesh.position.y + 5 > this.enemies[i].ydown()) {
+                    this.player.mesh.position.x = this.enemies[i].mesh.position.x + this.enemies[i].width / 2 + val
+                }
+                else if (this.player.mesh.position.x < this.enemies[i].xright() && this.player.mesh.position.x > this.enemies[i].xleft()) {
+                    if (posdown < 0) {
                     }
-                    else if (posright > 0 && this.player.mesh.position.y - 5 < this.enemies[i].yup() && this.player.mesh.position.y + 5 > this.enemies[i].ydown()) {
-                        this.player.mesh.position.x = this.enemies[i].mesh.position.x + this.enemies[i].width / 2 + val
+                    else if (posup < 2) {
+                        this.player.mesh.position.y = 5 + this.enemies[i].mesh.position.y + this.enemies[i].height / 2
                     }
-                    else if (this.player.mesh.position.x < this.enemies[i].xright() && this.player.mesh.position.x > this.enemies[i].xleft()) {
-                        if (posdown < 0) {
-                        }
-                        else if (posup < 2) {
-                            this.player.mesh.position.y = 5 + this.enemies[i].mesh.position.y + this.enemies[i].height / 2
-                        }
 
-                    }
                 }
             }
+        }
     }
 
     collisionObstacles() {
@@ -111,20 +122,20 @@ class LVLAbstract {
 
                 if (posleft < 0 && this.player.mesh.position.y - 5 < this.obstacles[i].yup() && this.player.mesh.position.y + 5 > this.obstacles[i].ydown()) {
                     this.player.mesh.position.x = this.obstacles[i].mesh.position.x - this.obstacles[i].width / 2 - val
-                    if(!(this.obstacles[i] instanceof MovingPlatform)){
-                    this.player.poswalljumping = this.player.mesh.position.y;
-                    this.player.walljump = 0;
-                    this.player.walljumpingleft = true;
-                    this.player.walljumpingright = false;
+                    if (!(this.obstacles[i] instanceof MovingPlatform) && !(this.obstacles[i] instanceof CheckpointObstacle)) {
+                        this.player.poswalljumping = this.player.mesh.position.y;
+                        this.player.walljump = 0;
+                        this.player.walljumpingleft = true;
+                        this.player.walljumpingright = false;
                     }
                 }
                 else if (posright > 0 && this.player.mesh.position.y - 5 < this.obstacles[i].yup() && this.player.mesh.position.y + 5 > this.obstacles[i].ydown()) {
                     this.player.mesh.position.x = this.obstacles[i].mesh.position.x + this.obstacles[i].width / 2 + val
-                    if(!(this.obstacles[i] instanceof MovingPlatform)){
-                    this.player.poswalljumping = this.player.mesh.position.y;
-                    this.player.walljump = 0;
-                    this.player.walljumpingleft = false;
-                    this.player.walljumpingright = true;
+                    if (!(this.obstacles[i] instanceof MovingPlatform) && !(this.obstacles[i] instanceof CheckpointObstacle)) {
+                        this.player.poswalljumping = this.player.mesh.position.y;
+                        this.player.walljump = 0;
+                        this.player.walljumpingleft = false;
+                        this.player.walljumpingright = true;
                     }
                 }
                 else if (this.player.mesh.position.x < this.obstacles[i].xright() && this.player.mesh.position.x > this.obstacles[i].xleft()) {
@@ -181,7 +192,7 @@ class LVLAbstract {
 
     createPlayer(x, y) {
         //hitbox
-        this.player = new Player(10, 6, 5, 2, this.gameconfig)
+        this.player = new Player(10, 6, 2, this.gameconfig)
         var playerbox = new BABYLON.MeshBuilder.CreateBox("heroplayer", { height: 10, depth: 5, width: 6 }, this.scene);
         playerbox.position.x = x;
         playerbox.position.y = y;

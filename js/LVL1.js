@@ -13,13 +13,14 @@ class LVL1 extends LVLAbstract {
         this.wavePickups();
         this.contactPickups();
         this.contactEndLevel();
+
         if (this.player.mesh.position.y < -30) {
             this.scene.activeCamera.lockedTarget = null
             if (!this.gui.showinggui)
                 this.gui.createGameOverScreen()
         }
 
-        this.player.move(this.scene.activeCamera);
+        this.player.move(this.scene.activeCamera,this.enemies);
 
         this.scene.render();
     }
@@ -148,9 +149,12 @@ class LVL1 extends LVLAbstract {
     }
 
     createPickups() {
-        this.pickups = [];
-        var pickup = new Pickup(12,500, 2)
+        var pickup = new Pickup(500,12, 2)
         pickup.createWalljump(this.scene)
+        this.pickups.push(pickup);
+
+        pickup = new Pickup(-70,10, 2)
+        pickup.createHPUp(this.scene)
         this.pickups.push(pickup);
 
     }

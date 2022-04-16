@@ -9,16 +9,26 @@ class GameConfig{
         this.divFps = divFps;
         this.jumpcounter = 1;
         this.scenes = [];
+        this.stats;
+        this.statsprev;
     }
 
     createNewEngine(){
         this.scenes[0].dispose()
-        //console.log(this.scenes)
         this.engine.dispose()
         this.engine = new BABYLON.Engine(this.canvas, true);
     }
     updateJump(){
         this.jumpingstarted+=this.jumpcounter;
+    }
+
+    newStats(){
+        this.stats = {
+            "walljump":false,
+            "hp":6,
+            "weapon":"fists"
+        }
+        this.statsprev = Object.assign( {}, this.stats );
     }
 
 

@@ -36,17 +36,34 @@ class Pickup {
     }
 
     createHPUp(scene){
+
+        var obj = new BABYLON.Mesh.CreateDisc("", 5, 64, scene);
+        var objmat = new BABYLON.StandardMaterial("", scene);
+        objmat.diffuseTexture = new BABYLON.Texture("images/hpup.png", scene);
+        obj.material = objmat;
+        obj.position.y = this.originaly;
+        obj.position.x = this.originalx;
+        this.mesh = obj
+        this.tag = "hp"
+        this.tooltipimage = "images/WallJumpTooltip.png"
     }
 
     activateEffect(player){
         switch(this.tag){
             case "walljump":
-                player.powers["walljump"] = true
+                player.gameconfig.stats["walljump"] = true
+                break
             case "sword":
-                player.weapon ="sword"
+                player.gameconfig.stats["weapon"] ="sword"
                 player.updateWeapon()
+                break
             case "hp":
-                player.powers["hpbuffs"] +=10
+                player.gameconfig.stats["hp"] +=2
+                console.log(player.gameconfig.stats)
+                console.log(player.gameconfig.statsprev)
+
+                player.hp+=2
+                break
         }
     }
     move() {

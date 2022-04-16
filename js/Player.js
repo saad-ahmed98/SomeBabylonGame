@@ -1,16 +1,10 @@
 class Player extends Personnage {
-    constructor(height, width, hp, speed, gameconfig) {
-        super(height, width, hp, speed)
+    constructor(height, width, speed, gameconfig) {
+        super(height, width, gameconfig.stats["hp"], speed)
         this.gameconfig = gameconfig
-        this.weapon = "fists"
         this.swordmesh;
 
         //variables d'état, à changer
-        this.powers = {
-            "walljump":false,
-            "hpbuffs":0
-            //"doublejump":false
-        }
         this.jumping = false;
         this.lookAt = 1;
         this.walljumpingleft = false;
@@ -119,7 +113,7 @@ class Player extends Personnage {
     }
 
     weaponrange(){
-        switch(this.weapon){
+        switch(this.gameconfig.stats["weapon"]){
             case "fists":
                 return 3
             case "sword":
@@ -128,7 +122,7 @@ class Player extends Personnage {
     }
 
     weapondmg(){
-        switch(this.weapon){
+        switch(this.gameconfig.stats["weapon"]){
             case "fists":
                 return 1
             case "sword":
@@ -137,7 +131,7 @@ class Player extends Personnage {
     }
 
     jump(followCamera) {
-        if (this.walljumpingleft && this.walljump < 25 && this.powers["walljump"]) {
+        if (this.walljumpingleft && this.walljump < 25 && this.gameconfig.stats["walljump"]) {
             if (this.walljump < 15)
                 this.gameconfig.inputStates.right = false;
             this.mesh.moveWithCollisions(new BABYLON.Vector3(-0.7 * this.gameconfig.rollingAverage.average * this.speed, 0, 0));
@@ -149,7 +143,7 @@ class Player extends Personnage {
 
         }
         else {
-            if (this.walljumpingright && this.walljump < 25 && this.powers["walljump"]) {
+            if (this.walljumpingright && this.walljump < 25 && this.gameconfig.stats["walljump"]) {
                 if (this.walljump < 15)
                     this.gameconfig.inputStates.left = false;
                 this.mesh.moveWithCollisions(new BABYLON.Vector3(0.7 * this.gameconfig.rollingAverage.average * this.speed, 0, 0));

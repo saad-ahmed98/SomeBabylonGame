@@ -27,11 +27,14 @@ class LVLGUIController {
 
         retry.onPointerUpObservable.add(function () {
             let newlvl;
+            instance.gameconfig.stats=Object.assign( {}, instance.gameconfig.statsprev );
             switch(instance.lvl){
                 case "lvl1":
                     newlvl = new LVL1(instance.gameconfig);
+                    break
                 case "lvl2":
                     newlvl = new LVL2(instance.gameconfig);
+                    break
             }
         });
 
@@ -43,6 +46,7 @@ class LVLGUIController {
 
         quit.onPointerUpObservable.add(function () {
             instance.gameconfig.createNewEngine()
+            instance.gameconfig.newStats()
             new MainMenu(instance.gameconfig);
         });
 
@@ -69,13 +73,16 @@ class LVLGUIController {
 
         next.onPointerUpObservable.add(function () {
             instance.gameconfig.createNewEngine()
+            instance.gameconfig.statsprev=Object.assign({}, instance.gameconfig.stats );
             switch(instance.lvl){
                 case "lvl1":
                     //switch to lvl2
                     new LVL2(instance.gameconfig);
+                    break
                 case "lvl2":
                     //switch to lvl3
                     new LVL2(instance.gameconfig);
+                    break
             }
         });
 
