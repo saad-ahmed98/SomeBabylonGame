@@ -83,6 +83,86 @@ class LVLAbstract {
         }
     }
 
+    loadSounds() {
+        var instance = this;
+        var assetsManager = instance.scene.assetsManager;
+
+        var binaryTask = assetsManager.addBinaryFileTask(
+            "attack",
+            "sounds/attack.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.attack = new BABYLON.Sound(
+                "attack",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: false,
+                }
+            );
+        };
+
+        binaryTask = assetsManager.addBinaryFileTask(
+            "death",
+            "sounds/death.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.death = new BABYLON.Sound(
+                "death",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: false,
+                }
+            );
+        };
+
+        binaryTask = assetsManager.addBinaryFileTask(
+            "hurt",
+            "sounds/hurt.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.hurt = new BABYLON.Sound(
+                "hurt",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: false,
+                }
+            );
+        };
+
+        binaryTask = assetsManager.addBinaryFileTask(
+            "jump",
+            "sounds/attack.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.jump = new BABYLON.Sound(
+                "jump",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: false,
+                }
+            );
+        };
+
+    }
+
+    loadSkybox(url) {
+        var instance = this;
+        var assetsManager = instance.scene.assetsManager;
+
+        var textureTask = assetsManager.addTextureTask("image task", url);
+        textureTask.onSuccess = function (task) {
+            instance.scene.assets.skybox = task.texture
+        }
+    }
+
     collisionPlayerEnemies() {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].hp > 0) {
@@ -183,13 +263,29 @@ class LVLAbstract {
         }
     }
 
+    collisionBullets() {
+        for (let j = 0; j < this.enemies.length; j++) {
+            for (let i = 0; i < this.enemies[j].bullets.length; i++) {
+                var bullet = this.enemies[j].bullets[i]
+                if (!bullet.dead) {
+                    if (Math.abs(bullet.mesh.position.x - this.player.mesh.position.x) <= 10 && Math.abs(bullet.mesh.position.y - this.player.mesh.position.y) <= 10) {
+                        bullet.dead = true;
+                        bullet.mesh.dispose()
+                        this.player.receiveDamage(1)
+                    }
+                }
+            }
+        }
+    }
+
+
     createFollowCamera(radius) {
         let camera = new BABYLON.FollowCamera("playerFollowCamera", this.player.mesh.position, this.scene, this.player.mesh);
 
         camera.radius = radius; // how far from the object to follow
         camera.heightOffset = 10; // how high above the object to place the camera
         camera.rotationOffset = 90; // the viewing angle
-        camera.cameraAcceleration = .1; // how fast to move
+        camera.cameraAcceleration = 0.1; // how fast to move
         camera.maxCameraSpeed = 5; // speed limit
 
         return camera;
@@ -220,7 +316,7 @@ class LVLAbstract {
         mesh.scaling.y = 5;
         mesh.rotation = new BABYLON.Vector3(0, 0, 0);
 
-        this.scene.assets.playeranimations[2].play(true)
+        this.scene.assets.playeranimations[3].play(true)
 
         this.player.animationGroups = this.scene.assets.playeranimations
         this.player.mesh = playerbox
@@ -230,6 +326,13 @@ class LVLAbstract {
         this.player.addHPBar(this.scene)
         this.player.updateHpBar()
 
+    }
+
+    playBGM(volume) {
+        var sound = this.scene.assets.bgm
+        sound.setVolume(volume)
+        if (!sound.isPlaying)
+            sound.play()
     }
 
     configureAssetManager() {
@@ -260,18 +363,89 @@ class LVLAbstract {
         this.scene.assetsManager = assetsManager;
     }
 
+    loadEnemySound(){
+        var instance = this;
+        var assetsManager = instance.scene.assetsManager;
+        var binaryTask = assetsManager.addBinaryFileTask(
+            "enemyattack",
+            "sounds/enemyattack.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.enemyattack = new BABYLON.Sound(
+                "enemyattack",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: false,
+                }
+            );
+        };
+
+        binaryTask = assetsManager.addBinaryFileTask(
+            "enemydeath",
+            "sounds/enemydeath.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.enemydeath = new BABYLON.Sound(
+                "enemydeath",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: false,
+                }
+            );
+        };
+    }
+
+    loadEnemy2Sound(){
+        var instance = this;
+        var assetsManager = instance.scene.assetsManager;
+        var binaryTask = assetsManager.addBinaryFileTask(
+            "enemy2attack",
+            "sounds/enemy2attack.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.enemy2attack = new BABYLON.Sound(
+                "enemy2attack",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: false,
+                }
+            );
+        };
+
+        binaryTask = assetsManager.addBinaryFileTask(
+            "enemy2death",
+            "sounds/enemy2death.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.enemy2death = new BABYLON.Sound(
+                "enemy2death",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: false,
+                }
+            );
+        };
+    }
+
     loadPlayer() {
         var instance = this;
         let meshTask = this.scene.assetsManager.addMeshTask(
             "player task",
             "",
             "models/",
-            "character.glb"
+            "character2.glb"
         );
         meshTask.onSuccess = function (task) {
             instance.scene.assets.player = task.loadedMeshes[0]
             instance.scene.assets.playeranimations = task.loadedAnimationGroups
-
         };
     }
 

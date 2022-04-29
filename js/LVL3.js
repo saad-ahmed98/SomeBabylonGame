@@ -21,7 +21,7 @@ class LVL3 extends LVLAbstract {
         this.contactEndLevel();
         this.moveEnemies();
         this.moveElevator();
-        //console.log("x:" + this.player.mesh.position.x + ",y:" + this.player.mesh.position.y)
+        console.log("x:" + this.player.mesh.position.x + ",y:" + this.player.mesh.position.y)
         if (this.player.mesh.position.y < -1240) {
             this.scene.activeCamera.lockedTarget = null
             if (!this.gui.showinggui)
@@ -43,7 +43,7 @@ class LVL3 extends LVLAbstract {
         this.loadPlayer();
         this.loadEnemies();
         this.loadSounds();
-        this.loadSkybox();
+        this.loadSkybox("images/skybox3.jpg");
         this.loadDecor()
     }
 
@@ -53,11 +53,22 @@ class LVL3 extends LVLAbstract {
             "computer task",
             "",
             "models/",
-            "computer.babylon"
+            "LVL3/computer.babylon"
         );
 
         meshTask.onSuccess = function (task) {
             instance.scene.assets.computer = task.loadedMeshes[0]
+        };
+
+        meshTask = this.scene.assetsManager.addMeshTask(
+            "door task",
+            "",
+            "models/",
+            "LVL3/door.babylon"
+        );
+
+        meshTask.onSuccess = function (task) {
+            instance.scene.assets.door = task.loadedMeshes[0]
         };
     }
 
@@ -100,11 +111,14 @@ class LVL3 extends LVLAbstract {
 
 
     loadSounds() {
+        super.loadSounds()
+        this.loadEnemySound()
+        this.loadEnemy2Sound()
         var instance = this;
         var assetsManager = instance.scene.assetsManager;
         var binaryTask = assetsManager.addBinaryFileTask(
             "swordSwing",
-            "sounds/sword swing.wav"
+            "sounds/sword swing.mp3"
         );
         binaryTask.onSuccess = function (task) {
             instance.scene.assets.swordSwingSound = new BABYLON.Sound(
@@ -117,26 +131,71 @@ class LVL3 extends LVLAbstract {
                 }
             );
         };
+
+        binaryTask = assetsManager.addBinaryFileTask(
+            "elevator",
+            "sounds/elevator.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.elevator = new BABYLON.Sound(
+                "elevator",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: false,
+                }
+            );
+        };
+
+        binaryTask = assetsManager.addBinaryFileTask(
+            "alert",
+            "sounds/alert.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.alert = new BABYLON.Sound(
+                "alert",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: false,
+                }
+            );
+        };
+
+        binaryTask = assetsManager.addBinaryFileTask(
+            "bgm",
+            "sounds/lvl3music.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.bgm = new BABYLON.Sound(
+                "bgm",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: true,
+                }
+            );
+        };
+        
     }
-
-    loadSkybox() {
-        var instance = this;
-        var assetsManager = instance.scene.assetsManager;
-
-        var textureTask = assetsManager.addTextureTask("image task", "images/elevatorbox.png");
-        textureTask.onSuccess = function (task) {
-            instance.scene.assets.skybox = task.texture
-        }
-    }
-
-
 
     createScene() {
         this.createPlayer(-770, 280);
 
         this.player.updateWeapon()
+        let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 6700.8, depth: 1, width: 3200 }, this.scene);
+        skybox.position.y = 100;
+        let skyboxmat = new BABYLON.StandardMaterial("skyboxmat", this.scene);
+        skybox.material = skyboxmat;
 
+        skyboxmat.diffuseTexture = this.scene.assets.skybox
 
+        skybox.position.z = 500
+
+/*
         let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 1780, depth: 1, width: 454.5 }, this.scene);
         skybox.position.y = -450;
         skybox.position.x = -400;
@@ -144,12 +203,18 @@ class LVL3 extends LVLAbstract {
         skybox.material = skyboxmat;
         skyboxmat.diffuseTexture = this.scene.assets.skybox
         skybox.position.z = 100
+        */
 
         this.createObstacles();
         this.createEndLevel();
 
-        let followCamera = this.createFollowCamera(150);
-        this.scene.activeCamera = followCamera;
+        var instance = this
+        new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -10), this.scene);
+        setTimeout(function(){
+            let followCamera = instance.createFollowCamera(150);
+            instance.scene.activeCamera = followCamera;
+
+        },100)
 
         this.createLights();
 
@@ -164,6 +229,7 @@ class LVL3 extends LVLAbstract {
     }
 
     createWave1() {
+        this.elevator.alertSound(this.scene)
         var enemy = new Enemy(25, 20, 5, 0.2, this.player, -500, this.elevator.mesh.position.y+20, 20)
         enemy.createEnemy1(this.scene)
         this.enemies.push(enemy)
@@ -187,6 +253,8 @@ class LVL3 extends LVLAbstract {
     }
 
     createWave2() {
+        this.elevator.alertSound(this.scene)
+
         var enemy = new Enemy(25, 20, 5, 0.2, this.player, -500, this.elevator.mesh.position.y+20, 20)
         enemy.createEnemy1(this.scene)
         this.enemies.push(enemy)
@@ -202,7 +270,7 @@ class LVL3 extends LVLAbstract {
         this.enemies.push(enemy)
         this.elevator.enemies.push(enemy)
 
-        var enemy = new Enemy(40, 15, 10, 0.5, this.player, -300, this.elevator.mesh.position.y+50, 20)
+        var enemy = new Enemy(40, 15, 10, 0.5, this.player, -300, this.elevator.mesh.position.y+20, 20)
         enemy.createEnemy2(this.scene)
         this.enemies.push(enemy)
         this.elevator.enemies.push(enemy)
@@ -211,13 +279,13 @@ class LVL3 extends LVLAbstract {
 
 
     createWave3() {
-
-        var enemy = new Enemy(25, 20, 10, 0.2, this.player, -500, this.elevator.mesh.position.y+50, 20)
+        this.elevator.alertSound(this.scene)
+        var enemy = new Enemy(25, 20, 10, 0.2, this.player, -500, this.elevator.mesh.position.y+20, 20)
         enemy.createEnemy2(this.scene)
         this.enemies.push(enemy)
         this.elevator.enemies.push(enemy)
 
-        var enemy = new Enemy(40, 15, 10, 0.5, this.player, -300, this.elevator.mesh.position.y+50, 20)
+        var enemy = new Enemy(40, 15, 10, 0.5, this.player, -300, this.elevator.mesh.position.y+20, 20)
         enemy.createEnemy2(this.scene)
         this.enemies.push(enemy)
         this.elevator.enemies.push(enemy)
@@ -270,13 +338,22 @@ class LVL3 extends LVLAbstract {
         var colorMaterial = new BABYLON.StandardMaterial("", this.scene);
         colorMaterial.diffuseColor = new BABYLON.Color3(1, 0.68, 0);
 
-        obst = new Obstacle(200, 200, 5)
+        obst = new Obstacle(100, 100, 5)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
-        obj.position.y = -1100;
+        obj.position.y = -1150;
         obj.position.x = 40;
+        obj.visibility = 0
         obst.mesh = obj;
         obstt.push(obst)
         obst.mesh.material = colorMaterial
+
+        var comp = this.scene.assets.door
+        comp.parent = obj
+        comp.scaling.x = 30
+        comp.scaling.y = 30
+        comp.scaling.z = 30
+        comp.position.y = -50
+        comp.rotation.y  =   Math.PI/2;
 
 
         obst = new Elevator(10, 100, 300, -1200)
@@ -304,6 +381,8 @@ class LVL3 extends LVLAbstract {
     }
 
     moveElevator(){
+        if(this.elevator.hasStarted)
+            this.playBGM(0.3);
         this.elevator.move();
         this.elevator.verifyLifeEnemies();
         
@@ -333,8 +412,8 @@ class LVL3 extends LVLAbstract {
     createEndLevel() {
         var obj = new BABYLON.MeshBuilder.CreateBox("", { height: 30, depth: 5, width: 15 }, this.scene);
         obj.position.y = -1190;
-        obj.position.x = -10;
-        obj.visibility = 0.3;
+        obj.position.x = 20;
+        obj.visibility = 0;
 
         var obj2 = new BABYLON.Mesh.CreateDisc("", 10, 64, this.scene);
         var objmat = new BABYLON.StandardMaterial("", this.scene);
@@ -342,7 +421,7 @@ class LVL3 extends LVLAbstract {
 
         obj2.material = objmat;
         obj2.position.y = -1150;
-        obj2.position.x = -10;
+        obj2.position.x = 20;
 
 
         this.endlvl = obj;

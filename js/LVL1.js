@@ -19,9 +19,9 @@ class LVL1 extends LVLAbstract {
             if (!this.gui.showinggui)
                 this.gui.createGameOverScreen()
         }
-
+        if(this.player.hp>0)
         this.player.move(this.scene.activeCamera,this.enemies);
-
+        this.playBGM(0.3);
         this.scene.render();
     }
 
@@ -29,6 +29,29 @@ class LVL1 extends LVLAbstract {
         this.loadPlayer();
         this.loadSounds();
         this.loadBuildings();
+        this.loadSkybox("images/skybox.jpg");
+    }
+
+    loadSounds(){
+        super.loadSounds()
+        var instance = this;
+        var assetsManager = instance.scene.assetsManager;
+
+        var binaryTask = assetsManager.addBinaryFileTask(
+            "bgm",
+            "sounds/lvl1music.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.bgm = new BABYLON.Sound(
+                "bgm",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: true,
+                }
+            );
+        };
     }
 
     loadBuildings() {
@@ -37,7 +60,7 @@ class LVL1 extends LVLAbstract {
             "6story task",
             "",
             "models/",
-            "6Story_Balcony.glb"
+            "LVL1/6Story_Balcony.glb"
         );
 
         meshTask.onSuccess = function (task) {
@@ -48,7 +71,7 @@ class LVL1 extends LVLAbstract {
             "3story task",
             "",
             "models/",
-            "3Story_Balcony.glb"
+            "LVL1/3Story_Balcony.glb"
         );
 
         meshTask.onSuccess = function (task) {
@@ -59,7 +82,7 @@ class LVL1 extends LVLAbstract {
             "2story wide task",
             "",
             "models/",
-            "2Story_Wide.glb"
+            "LVL1/2Story_Wide.glb"
         );
 
         meshTask.onSuccess = function (task) {
@@ -70,7 +93,7 @@ class LVL1 extends LVLAbstract {
             "4story center task",
             "",
             "models/",
-            "4Story_Center.glb"
+            "LVL1/4Story_Center.glb"
         );
 
         meshTask.onSuccess = function (task) {
@@ -81,7 +104,7 @@ class LVL1 extends LVLAbstract {
             "building2 task",
             "",
             "models/",
-            "Building2_Large.glb"
+            "LVL1/Building2_Large.glb"
         );
 
         meshTask.onSuccess = function (task) {
@@ -89,34 +112,9 @@ class LVL1 extends LVLAbstract {
         };
     }
 
-    loadSounds() {
-        var instance = this;
-        var assetsManager = instance.scene.assetsManager;
-        var binaryTask = assetsManager.addBinaryFileTask(
-            "swordSwing",
-            "sounds/sword swing.wav"
-        );
-        binaryTask.onSuccess = function (task) {
-            instance.scene.assets.swordSwingSound = new BABYLON.Sound(
-                "swordSwing",
-                task.data,
-                this.scene,
-                null,
-                {
-                    loop: false,
-                }
-            );
-        };
-    }
-
 
     createScene() {
-        var instance = this;
-        /*
-        let ground = this.createGround(this.scene);
-        const groundMaterial = new BABYLON.GridMaterial("groundMaterial", this.scene);
-        ground.material = groundMaterial;
-        */
+
         this.createPlayer(-750, 20);
 
         let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 1687.5, depth: 1, width: 3200 }, this.scene);
@@ -124,7 +122,7 @@ class LVL1 extends LVLAbstract {
         let skyboxmat = new BABYLON.StandardMaterial("skyboxmat", this.scene);
         skybox.material = skyboxmat;
 
-        skyboxmat.diffuseTexture = new BABYLON.Texture("images/skybox.jpg", this.scene);
+        skyboxmat.diffuseTexture = this.scene.assets.skybox
 
         skybox.position.z = 500
 
@@ -133,8 +131,13 @@ class LVL1 extends LVLAbstract {
         this.createEndLevel();
 
 
-        let followCamera = this.createFollowCamera(150);
-        this.scene.activeCamera = followCamera;
+        var instance = this
+        new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -10), this.scene);
+        setTimeout(function(){
+            let followCamera = instance.createFollowCamera(150);
+            instance.scene.activeCamera = followCamera;
+
+        },100)
 
         this.createLights();
 

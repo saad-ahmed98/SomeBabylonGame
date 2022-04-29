@@ -9,8 +9,23 @@ class LVLGUIController {
 
     }
 
+    deathSound() {
+        var sound = this.scene.assets.death
+        sound.setVolume(0.3)
+        sound.play()
+    }
+
     createGameOverScreen() {
         this.showinggui = true;
+        this.deathSound()
+        var instance = this
+        setTimeout(() => {
+            instance.gameoverScreen()
+        }, 1500)
+
+    }
+
+    gameoverScreen() {
         var instance = this;
         this.lvlcontroller.dispose();
         this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene);
@@ -27,8 +42,8 @@ class LVLGUIController {
 
         retry.onPointerUpObservable.add(function () {
             let newlvl;
-            instance.gameconfig.stats=Object.assign( {}, instance.gameconfig.statsprev );
-            switch(instance.lvl){
+            instance.gameconfig.stats = Object.assign({}, instance.gameconfig.statsprev);
+            switch (instance.lvl) {
                 case "lvl1":
                     newlvl = new LVL1(instance.gameconfig);
                     break
@@ -37,6 +52,9 @@ class LVLGUIController {
                     break
                 case "lvl3":
                     newlvl = new LVL3(instance.gameconfig);
+                    break
+                case "lvl4":
+                    newlvl = new LVL4(instance.gameconfig);
                     break
             }
         });
@@ -76,8 +94,8 @@ class LVLGUIController {
 
         next.onPointerUpObservable.add(function () {
             instance.gameconfig.createNewEngine()
-            instance.gameconfig.statsprev=Object.assign({}, instance.gameconfig.stats );
-            switch(instance.lvl){
+            instance.gameconfig.statsprev = Object.assign({}, instance.gameconfig.stats);
+            switch (instance.lvl) {
                 case "lvl1":
                     //switch to lvl2
                     new LVL2(instance.gameconfig);
@@ -87,8 +105,12 @@ class LVLGUIController {
                     new LVL3(instance.gameconfig);
                     break
                 case "lvl3":
-                    //switch to lvl3
-                    new LVL3(instance.gameconfig);
+                    //switch to lvl4
+                    new LVL4(instance.gameconfig);
+                    break
+                case "lvl4":
+                    //switch to lvl5
+                    new LVL4(instance.gameconfig);
                     break
             }
         });
@@ -110,22 +132,22 @@ class LVLGUIController {
         this.lvlcontroller.addControl(quit);
     }
 
-    createTooltip(source,width,height) {
+    createTooltip(source, width, height) {
         this.lvlcontroller.dispose();
-        this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true,this.scene);
+        this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene);
         var image = new BABYLON.GUI.Image("tooltip", source);
         var panel = new BABYLON.GUI.StackPanel("panel");
         panel.top = "-350px;"
 
-        this.lvlcontroller.addControl(panel);   
+        this.lvlcontroller.addControl(panel);
         image.width = width;
         image.height = height;
 
         panel.addControl(image);
-        setTimeout(this.removeTool,8000,panel,image)
-    }    
+        setTimeout(this.removeTool, 8000, panel, image)
+    }
 
-    removeTool(panel,image){
+    removeTool(panel, image) {
         panel.removeControl(image)
     }
 }

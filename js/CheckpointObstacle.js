@@ -18,4 +18,15 @@ class CheckpointObstacle extends Obstacle{
         colorMaterial.diffuseColor = BABYLON.Color3.Red();
         this.mesh.material = colorMaterial
     }
+
+    createDoor(scene){
+        var comp = scene.assets.door.clone("")
+        comp.parent = this.mesh
+        comp.scaling.x = 14
+        comp.scaling.y = 14
+        comp.scaling.z = 14
+        comp.rotation.y  =   Math.PI/2;
+        comp.position.z = 10
+        this.mesh.visibility = 0
+    }
 }

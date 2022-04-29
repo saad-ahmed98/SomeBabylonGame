@@ -18,8 +18,11 @@ class Elevator extends Obstacle{
     move(){
         if(this.hasStarted){
             if(this.enemies.length==0){
-            if(this.mesh.position.y>this.targety)
+            if(this.mesh.position.y>this.targety){
+            this.elevatorSound(this.mesh._scene)
             this.mesh.position.y -= 1;
+            }
+            else this.mesh._scene.assets.elevator.stop()
             }
         }
     }
@@ -29,5 +32,20 @@ class Elevator extends Obstacle{
         setTimeout(() => {
             instance.hasStarted = true
         }, 2000)
+    }
+
+    elevatorSound(scene) {
+        var sound = scene.assets.elevator
+        sound.setVolume(0.5)
+        if (!sound.isPlaying)
+            sound.play()
+    }
+
+    alertSound(scene){
+       scene.assets.elevator.stop()
+        var sound = scene.assets.alert
+        sound.setVolume(0.3)
+        if (!sound.isPlaying)
+            sound.play()
     }
 }
