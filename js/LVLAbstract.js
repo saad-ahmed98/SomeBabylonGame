@@ -1,5 +1,6 @@
 class LVLAbstract {
     constructor(gameconfig, lvl) {
+        divFps.style.display = "block"
         gameconfig.createNewEngine()
         this.scene = new BABYLON.Scene(gameconfig.engine);
         gameconfig.scenes.push(this.scene)
@@ -347,11 +348,7 @@ class LVLAbstract {
             totalCount
         ) {
             instance.gameconfig.engine.loadingUIText =
-                "We are loading the scene.. " +
-                remainingCount +
-                " out of " +
-                totalCount +
-                " items still need to be loaded.";
+            '<div id="center"><div id="main" style="width:'+((totalCount-remainingCount)*600/totalCount)+'px"></div></div>'
         };
         assetsManager.onFinish = function (tasks) {
             instance.createScene()
@@ -447,6 +444,12 @@ class LVLAbstract {
             instance.scene.assets.player = task.loadedMeshes[0]
             instance.scene.assets.playeranimations = task.loadedAnimationGroups
         };
+    }
+
+    createLights() {
+        // i.e sun light with all light rays parallels, the vector is the direction.
+        let light0 = new BABYLON.HemisphericLight("dir0", new BABYLON.Vector3(1, 20, -10), this.scene);
+        light0.intensity = 1;
     }
 
 

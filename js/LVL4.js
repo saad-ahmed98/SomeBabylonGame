@@ -1,7 +1,10 @@
 class LVL4 extends LVLAbstract {
     constructor(gameconfig) {
+        imageLoading = "images/LVL4/loading.png"
+        titleLoading = "images/LVL4/title.png"
         super(gameconfig, "lvl4");
         console.log("lvl4")
+       
         this.teleports = []
     }
 
@@ -545,7 +548,7 @@ class LVL4 extends LVLAbstract {
 
         var obj2 = new BABYLON.Mesh.CreateDisc("", 10, 64, this.scene);
         var objmat = new BABYLON.StandardMaterial("", this.scene);
-        objmat.diffuseTexture = new BABYLON.Texture("images/endlvl.png", this.scene);
+        objmat.diffuseTexture = new BABYLON.Texture("images/common/endlvl.png", this.scene);
 
         obj2.material = objmat;
         obj2.position.y = 355;
@@ -553,14 +556,6 @@ class LVL4 extends LVLAbstract {
 
 
         this.endlvl = obj;
-
-    }
-
-    createLights() {
-        // i.e sun light with all light rays parallels, the vector is the direction.
-        let light0 = new BABYLON.HemisphericLight("dir0", new BABYLON.Vector3(1, 8, -10), this.scene);
-        light0.intensity = 1;
-
 
     }
 

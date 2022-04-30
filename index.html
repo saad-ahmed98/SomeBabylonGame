@@ -14,7 +14,7 @@
     <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
     <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
     <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
-
+    <script src="js/LoadingScreen.js"></script>
     <script src="js/GameConfig.js"></script>
     <script src="js/Personnage.js"></script>
     <script src="js/Player.js"></script>
@@ -38,6 +38,7 @@
 
 
 
+
     <script src="js/Enemy.js"></script>
     <script src="js/main.js"></script>
 
@@ -56,6 +57,26 @@
             right: 10px;
             width: 60px;
             height: 20px;
+        }
+
+        #center {
+            width: 600px;
+            height: 40px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -300px;
+            margin-top: -50px;
+            background: rgba(0, 0, 0, 1);
+            border: 2px solid rgba(255, 255, 255, 1);
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px 5px rgba(255, 255, 255, 0.2);
+        }
+
+        #main {
+            height: 40px;
+            background: #FFFFFF;
+            float: left;
         }
     </style>
 </head>

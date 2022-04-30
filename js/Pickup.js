@@ -15,13 +15,13 @@ class Pickup {
     createWalljump(scene){
         var obj = new BABYLON.Mesh.CreateDisc("", 5, 64, scene);
         var objmat = new BABYLON.StandardMaterial("", scene);
-        objmat.diffuseTexture = new BABYLON.Texture("images/walljump.png", scene);
+        objmat.diffuseTexture = new BABYLON.Texture("images/LVL1/walljump.png", scene);
         obj.material = objmat;
         obj.position.y = this.originaly;
         obj.position.x = this.originalx;
         this.mesh = obj
         this.tag = "walljump"
-        this.tooltipimage = "images/WallJumpTooltip.png"
+        this.tooltipimage = "images/LVL1/WallJumpTooltip.png"
         this.width = "700px"
         this.height = "196px"
     }
@@ -29,13 +29,13 @@ class Pickup {
     createSword(scene){
         var obj = new BABYLON.Mesh.CreateDisc("", 5, 64, scene);
         var objmat = new BABYLON.StandardMaterial("", scene);
-        objmat.diffuseTexture = new BABYLON.Texture("images/sword.png", scene);
+        objmat.diffuseTexture = new BABYLON.Texture("images/common/sword.png", scene);
         obj.material = objmat;
         obj.position.y = this.originaly;
         obj.position.x = this.originalx;
         this.mesh = obj
         this.tag = "sword"
-        this.tooltipimage = "images/SwordTooltip.png"
+        this.tooltipimage = "images/common/SwordTooltip.png"
         this.width = "400px"
         this.height = "153px"
 
@@ -45,13 +45,13 @@ class Pickup {
 
         var obj = new BABYLON.Mesh.CreateDisc("", 5, 64, scene);
         var objmat = new BABYLON.StandardMaterial("", scene);
-        objmat.diffuseTexture = new BABYLON.Texture("images/hpup.png", scene);
+        objmat.diffuseTexture = new BABYLON.Texture("images/common/hpup.png", scene);
         obj.material = objmat;
         obj.position.y = this.originaly;
         obj.position.x = this.originalx;
         this.mesh = obj
         this.tag = "hp"
-        this.tooltipimage = "images/HPTooltip.png"
+        this.tooltipimage = "images/common/HPTooltip.png"
         this.width = "400px"
         this.height = "153px"
     }

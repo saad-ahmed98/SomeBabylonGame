@@ -1,7 +1,10 @@
 class LVL3 extends LVLAbstract {
     constructor(gameconfig) {
+        imageLoading = "images/LVL3/loading.png"
+        titleLoading = "images/LVL3/title.png"
         super(gameconfig, "lvl3");
         console.log("lvl3")
+        
 
         this.elevator;
 
@@ -43,7 +46,7 @@ class LVL3 extends LVLAbstract {
         this.loadPlayer();
         this.loadEnemies();
         this.loadSounds();
-        this.loadSkybox("images/skybox3.jpg");
+        this.loadSkybox("images/LVL3/skybox.jpg");
         this.loadDecor()
     }
 
@@ -417,7 +420,7 @@ class LVL3 extends LVLAbstract {
 
         var obj2 = new BABYLON.Mesh.CreateDisc("", 10, 64, this.scene);
         var objmat = new BABYLON.StandardMaterial("", this.scene);
-        objmat.diffuseTexture = new BABYLON.Texture("images/endlvl.png", this.scene);
+        objmat.diffuseTexture = new BABYLON.Texture("images/common/endlvl.png", this.scene);
 
         obj2.material = objmat;
         obj2.position.y = -1150;
@@ -433,14 +436,6 @@ class LVL3 extends LVLAbstract {
         comp.scaling.y = 12
         comp.scaling.z = 12
         comp.position.z = 10
-
-
-    }
-
-    createLights() {
-        // i.e sun light with all light rays parallels, the vector is the direction.
-        let light0 = new BABYLON.HemisphericLight("dir0", new BABYLON.Vector3(1, 8, -10), this.scene);
-        light0.intensity = 1;
 
 
     }

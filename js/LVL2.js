@@ -1,7 +1,10 @@
 class LVL2 extends LVLAbstract {
     constructor(gameconfig) {
+        imageLoading = "images/LVL2/loading.png"
+        titleLoading = "images/LVL2/title.png"
         super(gameconfig, "lvl2");
         console.log("lvl2")
+        
     }
 
     renderScene() {
@@ -39,7 +42,7 @@ class LVL2 extends LVLAbstract {
         this.loadPlayer();
         this.loadEnemies();
         this.loadSounds();
-        this.loadSkybox("images/skybox2.jpg");
+        this.loadSkybox("images/LVL2/skybox.jpg");
         this.loadDecor();
     }
 
@@ -68,7 +71,7 @@ class LVL2 extends LVLAbstract {
 
         var binaryTask = assetsManager.addBinaryFileTask(
             "bgm",
-            "sounds/lvl1music.mp3"
+            "sounds/lvl2music.mp3"
         );
         binaryTask.onSuccess = function (task) {
             instance.scene.assets.bgm = new BABYLON.Sound(
@@ -399,10 +402,10 @@ class LVL2 extends LVLAbstract {
 
     createObstacles() {
         var mat1 = new BABYLON.StandardMaterial("mat1", this.scene);
-        mat1.diffuseTexture = new BABYLON.Texture("images/texture.png", this.scene);
+        mat1.diffuseTexture = new BABYLON.Texture("images/LVL2/bricks2.png", this.scene);
 
         var mat2 = new BABYLON.StandardMaterial("mat2", this.scene);
-        mat2.diffuseTexture = new BABYLON.Texture("images/bricks.jpg", this.scene);
+        mat2.diffuseTexture = new BABYLON.Texture("images/LVL2/bricks.jpg", this.scene);
 
         var obstt = []
         var obj;
@@ -536,7 +539,7 @@ class LVL2 extends LVLAbstract {
 
         var obj2 = new BABYLON.Mesh.CreateDisc("", 10, 64, this.scene);
         var objmat = new BABYLON.StandardMaterial("", this.scene);
-        objmat.diffuseTexture = new BABYLON.Texture("images/endlvl.png", this.scene);
+        objmat.diffuseTexture = new BABYLON.Texture("images/common/endlvl.png", this.scene);
 
         obj2.material = objmat;
         obj2.position.y = 360;
@@ -544,14 +547,6 @@ class LVL2 extends LVLAbstract {
 
 
         this.endlvl = obj;
-
-    }
-
-    createLights() {
-        // i.e sun light with all light rays parallels, the vector is the direction.
-        let light0 = new BABYLON.HemisphericLight("dir0", new BABYLON.Vector3(1, 8, -10), this.scene);
-        light0.intensity = 1;
-
 
     }
 

@@ -29,12 +29,12 @@ class LVLGUIController {
         var instance = this;
         this.lvlcontroller.dispose();
         this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene);
-        var image = new BABYLON.GUI.Image("gameover", "images/Game Over.png");
-        image.width = "700px";
-        image.height = "200px";
+        var image = new BABYLON.GUI.Image("gameover", "images/common/Game Over.png");
+        image.width = "800px";
+        image.height = "170px";
         image.top = "-150px;"
 
-        var retry = BABYLON.GUI.Button.CreateImageOnlyButton("retrybtn", "images/RetryButton.png");
+        var retry = BABYLON.GUI.Button.CreateImageOnlyButton("retrybtn", "images/common/RetryButton.png");
         retry.width = "200px"
         retry.height = "100px";
         retry.cornerRadius = 10;
@@ -59,9 +59,9 @@ class LVLGUIController {
             }
         });
 
-        var quit = BABYLON.GUI.Button.CreateImageOnlyButton("quitbtn", "images/QuitButton.png");
+        var quit = BABYLON.GUI.Button.CreateImageOnlyButton("quitbtn", "images/common/QuitButton.png");
         quit.width = "150px"
-        quit.height = "100px";
+        quit.height = "80px";
         quit.top = "200px";
         quit.cornerRadius = 10;
 
@@ -81,12 +81,12 @@ class LVLGUIController {
         this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene);
         this.showinggui = true;
         var instance = this;
-        var image = new BABYLON.GUI.Image("lvlclear", "images/Level Clear.png");
-        image.width = "700px";
-        image.height = "200px";
+        var image = new BABYLON.GUI.Image("lvlclear", "images/common/Level Clear.png");
+        image.width = "800px";
+        image.height = "170px";
         image.top = "-150px;"
 
-        var next = BABYLON.GUI.Button.CreateImageOnlyButton("nextbtn", "images/NextButton.png");
+        var next = BABYLON.GUI.Button.CreateImageOnlyButton("nextbtn", "images/common/NextButton.png");
         next.width = "200px"
         next.height = "100px";
         next.cornerRadius = 10;
@@ -115,14 +115,15 @@ class LVLGUIController {
             }
         });
 
-        var quit = BABYLON.GUI.Button.CreateImageOnlyButton("quitbtn", "images/QuitButton.png");
+        var quit = BABYLON.GUI.Button.CreateImageOnlyButton("quitbtn", "images/common/QuitButton.png");
         quit.width = "150px"
-        quit.height = "100px";
+        quit.height = "80px";
         quit.top = "200px";
         quit.cornerRadius = 10;
 
         quit.onPointerUpObservable.add(function () {
             instance.gameconfig.createNewEngine()
+            instance.gameconfig.newStats()
             new MainMenu(instance.gameconfig);
 
         });
