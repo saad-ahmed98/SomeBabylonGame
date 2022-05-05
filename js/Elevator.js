@@ -27,6 +27,35 @@ class Elevator extends Obstacle{
         }
     }
 
+    addDetails(scene){
+    
+            var obj = scene.assets.switch
+            obj.parent=this.mesh
+
+            obj.position.x = 100
+            obj.position.y = 5
+            obj.position.z = 15
+            obj.scaling.x = 8
+            obj.scaling.y = 8
+            obj.scaling.z = 8
+
+            var obj = scene.assets.tile
+            obj.parent=this.mesh
+
+            obj.position.x = 100
+            obj.position.y = 4.5
+            obj.scaling.x = 50
+            obj.scaling.y = 30
+            obj.scaling.z = 50
+
+            var obj2 = obj.clone()
+            obj2.position.x = 0
+
+            obj2 = obj.clone()
+            obj2.position.x = -100
+
+    }
+
     start(){
         var instance = this;
         setTimeout(() => {

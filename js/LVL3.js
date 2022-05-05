@@ -73,6 +73,50 @@ class LVL3 extends LVLAbstract {
         meshTask.onSuccess = function (task) {
             instance.scene.assets.door = task.loadedMeshes[0]
         };
+
+        meshTask = this.scene.assetsManager.addMeshTask(
+            "torch task",
+            "",
+            "models/",
+            "LVL3/torch.babylon"
+        );
+
+        meshTask.onSuccess = function (task) {
+            instance.scene.assets.torch = task.loadedMeshes[0]
+        };
+
+        meshTask = this.scene.assetsManager.addMeshTask(
+            "pod task",
+            "",
+            "models/",
+            "LVL3/pod.babylon"
+        );
+
+        meshTask.onSuccess = function (task) {
+            instance.scene.assets.pod = task.loadedMeshes[0]
+        };
+
+        meshTask = this.scene.assetsManager.addMeshTask(
+            "switch task",
+            "",
+            "models/",
+            "LVL3/switch.babylon"
+        );
+
+        meshTask.onSuccess = function (task) {
+            instance.scene.assets.switch = task.loadedMeshes[0]
+        };
+
+        meshTask = this.scene.assetsManager.addMeshTask(
+            "tile task",
+            "",
+            "models/",
+            "LVL3/tile.babylon"
+        );
+
+        meshTask.onSuccess = function (task) {
+            instance.scene.assets.tile = task.loadedMeshes[0]
+        };
     }
 
     loadEnemies() {
@@ -185,8 +229,50 @@ class LVL3 extends LVLAbstract {
         
     }
 
+    createDecor(){
+
+        //torches
+        var obj = this.scene.assets.torch
+        obj.position.x = -625
+        obj.position.y = 200
+        obj.scaling.x = 10
+        obj.scaling.y = 10
+        obj.scaling.z = 10
+
+        for(let i = 0;i<7;i++){
+            var obj2 = obj.clone()
+            obj2.position.y = obj.position.y-(200*(i+1))
+        }
+
+        var obj = obj.clone()
+        obj.position.x = -199.5
+        obj.rotation.y  =   Math.PI;
+
+        for(let i = 0;i<6;i++){
+            var obj2 = obj.clone()
+            obj2.position.y = obj.position.y-(200*(i+1))
+        }
+        
+        var obj = this.scene.assets.pod
+        obj.position.x = -60
+        obj.position.y = -1199
+        obj.position.z = 30
+        obj.scaling.x = 12
+        obj.scaling.y = 12
+        obj.scaling.z = 12
+
+        var obj2 = obj.clone()
+        obj2.position.x = -100
+
+        var obj2 = obj.clone()
+        obj2.position.x = -20
+
+    }
+
     createScene() {
-        this.createPlayer(-770, 280);
+        this.createPlayer(-60, -1120);
+
+        //this.createPlayer(-770, 280);
 
         this.player.updateWeapon()
         let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 6700.8, depth: 1, width: 3200 }, this.scene);
@@ -198,18 +284,11 @@ class LVL3 extends LVLAbstract {
 
         skybox.position.z = 500
 
-/*
-        let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 1780, depth: 1, width: 454.5 }, this.scene);
-        skybox.position.y = -450;
-        skybox.position.x = -400;
-        let skyboxmat = new BABYLON.StandardMaterial("skyboxmat", this.scene);
-        skybox.material = skyboxmat;
-        skyboxmat.diffuseTexture = this.scene.assets.skybox
-        skybox.position.z = 100
-        */
 
         this.createObstacles();
         this.createEndLevel();
+        this.createDecor();
+
 
         var instance = this
         new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -10), this.scene);
@@ -300,13 +379,15 @@ class LVL3 extends LVLAbstract {
         var obj;
 
         var colorMaterial = new BABYLON.StandardMaterial("", this.scene);
-        colorMaterial.diffuseColor = new BABYLON.Color3(0.63, 0.63, 0.64);
+        colorMaterial.diffuseTexture = new BABYLON.Texture("images/LVL3/metal.jpg", this.scene);
 
 
         var obst = new Obstacle(2000, 200, 300)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.y = -770;
         obj.position.x = -775;
+        obj.position.z = -1;
+
         obst.mesh = obj;
         obstt.push(obst)
 
@@ -330,6 +411,10 @@ class LVL3 extends LVLAbstract {
         obstt.push(obst)
         obst.mesh.material = colorMaterial
 
+        var colorMaterial = new BABYLON.StandardMaterial("", this.scene);
+        colorMaterial.diffuseTexture = new BABYLON.Texture("images/LVL3/metal2.jpg", this.scene);
+
+
         obst = new Obstacle(200, 200, 500)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.y = -1300;
@@ -338,8 +423,6 @@ class LVL3 extends LVLAbstract {
         obstt.push(obst)
         obst.mesh.material = colorMaterial
 
-        var colorMaterial = new BABYLON.StandardMaterial("", this.scene);
-        colorMaterial.diffuseColor = new BABYLON.Color3(1, 0.68, 0);
 
         obst = new Obstacle(100, 100, 5)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
@@ -365,10 +448,9 @@ class LVL3 extends LVLAbstract {
         obj.position.x = -400;
         obst.mesh = obj;
 
+        obst.addDetails(this.scene)
 
-        var colorMaterial = new BABYLON.StandardMaterial("", this.scene);
-        colorMaterial.diffuseColor = new BABYLON.Color3(0.34, 0.34, 0.35);
-        obst.mesh.material = colorMaterial
+
         this.elevator = obst
         obstt.push(obst)
 

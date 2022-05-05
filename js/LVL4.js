@@ -22,7 +22,7 @@ class LVL4 extends LVLAbstract {
         this.contactEndLevel();
         this.collisionBullets();
         this.moveEnemies();
-        //console.log("x:" + this.player.mesh.position.x + ",y:" + this.player.mesh.position.y)
+        console.log("x:" + this.player.mesh.position.x + ",y:" + this.player.mesh.position.y)
         if (this.player.mesh.position.y < -70) {
             this.scene.activeCamera.lockedTarget = null
             if (!this.gui.showinggui)

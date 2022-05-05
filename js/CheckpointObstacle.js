@@ -14,9 +14,12 @@ class CheckpointObstacle extends Obstacle{
     }
 
     colorMesh(scene){
-        var colorMaterial = new BABYLON.StandardMaterial("", scene);
-        colorMaterial.diffuseColor = BABYLON.Color3.Red();
+        var colorMaterial = new BABYLON.GridMaterial("", scene);
+        colorMaterial.majorUnitFrequency = 20;
+        colorMaterial.gridRatio = 1;
+        colorMaterial.mainColor = BABYLON.Color3.Red();
         this.mesh.material = colorMaterial
+
     }
 
     createDoor(scene){

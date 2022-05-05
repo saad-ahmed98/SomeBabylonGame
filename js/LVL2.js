@@ -149,6 +149,8 @@ class LVL2 extends LVLAbstract {
 
         meshTask.onSuccess = function (task) {
             instance.scene.assets.chest = task.loadedMeshes[0]
+            instance.scene.assets.chesttop = task.loadedMeshes[1]
+            //task.loadedMeshes[1].dispose()
         };
 
         meshTask = this.scene.assetsManager.addMeshTask(
@@ -194,11 +196,27 @@ class LVL2 extends LVLAbstract {
         meshTask.onSuccess = function (task) {
             instance.scene.assets.entrancedg = task.loadedMeshes[0]
         };
+
+        meshTask = this.scene.assetsManager.addMeshTask(
+            "bookcase task",
+            "",
+            "models/",
+            "LVL2/bookcase.babylon"
+        );
+
+        meshTask.onSuccess = function (task) {
+            
+            instance.scene.assets.bookcase = task.loadedMeshes[0]
+            var hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("environmentSpecular.env", instance.scene);
+            instance.scene.environmentTexture = hdrTexture;
+            
+        };
     }
 
     createDecor(){
 
         //candels
+
         var obj = this.scene.assets.candel
         obj.position.x = -600
         obj.position.y = 225
@@ -223,12 +241,25 @@ class LVL2 extends LVLAbstract {
         obj2.position.x = -550
 
         obj2 = obj.clone()
+        obj2.position.x = -650
+
+        obj2 = obj.clone()
         obj2.position.x = -780
         obj2.position.y = 0
 
         obj2 = obj.clone()
         obj2.position.x = -760
         obj2.position.y = 0
+
+        obj2 = obj.clone()
+        obj2.position.x = 440
+        obj2.position.y = 310
+        obj2.position.z = 10
+
+        obj2 = obj.clone()
+        obj2.position.x = 390
+        obj2.position.y = 310
+        obj2.position.z = 10
 
         var obj = this.scene.assets.chest
         obj.position.x = -770
@@ -238,6 +269,16 @@ class LVL2 extends LVLAbstract {
         obj.scaling.y = 10
         obj.scaling.z = 10
         obj.rotation.y  =   Math.PI/2;
+
+        var obj = this.scene.assets.chesttop
+        obj.position.x = -770
+        obj.position.y = 5
+        obj.position.z = 13
+        obj.scaling.x = 10
+        obj.scaling.y = 10
+        obj.scaling.z = 10
+        obj.rotation.y  =   Math.PI/2;
+
 
         var obj = this.scene.assets.column
         obj.position.x = -550
@@ -300,6 +341,19 @@ class LVL2 extends LVLAbstract {
         obj2.position.y = 250;
         obj2.position.z = 20;
 
+        //bookcase
+        var comp = this.scene.assets.bookcase
+        comp.position.x = 470
+        comp.position.y = 310
+        comp.position.z = 30
+        comp.scaling.x = 30
+        comp.scaling.y = 30
+        comp.scaling.z = 30
+        comp.rotation.y  =   Math.PI/2;
+
+        var comp2 = comp.clone()
+        comp2.position.x = 370
+       
 
     }
     createScene() {
@@ -353,7 +407,7 @@ class LVL2 extends LVLAbstract {
         var obst = new CheckpointObstacle(45, 50, 7, [enemy])
         var obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.x = -460;
-        obj.position.y = 245;
+        obj.position.y = 243;
         obst.mesh = obj;
         obst.createDoor(this.scene)
         this.obstacles.push(obst)
@@ -378,9 +432,10 @@ class LVL2 extends LVLAbstract {
         var obst = new CheckpointObstacle(100, 50, 7, [enemy, enemy1])
         var obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.x = 335;
-        obj.position.y = 350;
+        obj.position.y = 330;
+
         obst.mesh = obj;
-        obst.colorMesh(this.scene)
+        obst.createDoor(this.scene)
         this.obstacles.push(obst)
 
 
@@ -526,7 +581,7 @@ class LVL2 extends LVLAbstract {
     createEndLevel() {
         var obj = new BABYLON.MeshBuilder.CreateBox("", { height: 30, depth: 5, width: 15 }, this.scene);
         obj.position.y = 320;
-        obj.position.x = 375;
+        obj.position.x = 420;
         obj.visibility = 0;
 
         var comp = this.scene.assets.door
@@ -536,6 +591,8 @@ class LVL2 extends LVLAbstract {
         comp.scaling.z = 14
         comp.position.z = 20
         comp.position.x = -20
+        comp.position.y = 10
+
 
         var obj2 = new BABYLON.Mesh.CreateDisc("", 10, 64, this.scene);
         var objmat = new BABYLON.StandardMaterial("", this.scene);
@@ -543,7 +600,7 @@ class LVL2 extends LVLAbstract {
 
         obj2.material = objmat;
         obj2.position.y = 360;
-        obj2.position.x = 375;
+        obj2.position.x = 420;
 
 
         this.endlvl = obj;
