@@ -8,7 +8,7 @@ class LVL4 extends LVLAbstract {
         this.teleports = []
     }
 
-    renderScene() {
+    createLvl() {
         this.gameconfig.divFps.innerHTML = this.gameconfig.engine.getFps().toFixed() + " fps";
         this.gameconfig.rollingAverage.add(this.scene.getAnimationRatio());
         this.waveMovingPlatforms();
@@ -36,7 +36,6 @@ class LVL4 extends LVLAbstract {
                 this.gui.createGameOverScreen()
         }
         this.playBGM(0.1);
-        this.scene.render();
     }
 
     loadAssets() {

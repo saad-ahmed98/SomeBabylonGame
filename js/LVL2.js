@@ -7,7 +7,7 @@ class LVL2 extends LVLAbstract {
         
     }
 
-    renderScene() {
+    createLvl() {
         this.gameconfig.divFps.innerHTML = this.gameconfig.engine.getFps().toFixed() + " fps";
         this.gameconfig.rollingAverage.add(this.scene.getAnimationRatio());
         this.waveMovingPlatforms();
@@ -34,8 +34,6 @@ class LVL2 extends LVLAbstract {
         }
 
         this.playBGM(0.3);
-
-        this.scene.render();
     }
 
     loadAssets() {

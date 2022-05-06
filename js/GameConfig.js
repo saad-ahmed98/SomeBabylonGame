@@ -41,6 +41,8 @@ class GameConfig{
     this.inputStates.down = false;
     this.inputStates.space = false;
     this.inputStates.attack = false;
+    this.inputStates.pause=false;
+
 
     //add the listener to the main, window object, and update the states
     window.addEventListener('keydown', (event) => {
@@ -57,6 +59,8 @@ class GameConfig{
         }
         else if ((event.key === "e") || (event.key === "E")) {
             this.inputStates.attack = true;
+        }else if(event.key==='Escape'){
+            this.inputStates.pause=true;
         }
     }, false);
 
@@ -77,6 +81,8 @@ class GameConfig{
         }
         else if ((event.key === "e") || (event.key === "E")) {
             this.inputStates.attack = false;
+        }else if(event.key==='Escape'){
+            this.inputStates.pause=true;
         }
     }, false);
 }

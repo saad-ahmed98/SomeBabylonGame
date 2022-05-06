@@ -11,7 +11,7 @@ class LVL3 extends LVLAbstract {
         this.checkpoint = 1
     }
 
-    renderScene() {
+    createLvl() {
         this.gameconfig.divFps.innerHTML = this.gameconfig.engine.getFps().toFixed() + " fps";
         this.gameconfig.rollingAverage.add(this.scene.getAnimationRatio());
         this.waveMovingPlatforms();
@@ -38,8 +38,6 @@ class LVL3 extends LVLAbstract {
             if (!this.gui.showinggui)
                 this.gui.createGameOverScreen()
         }
-
-        this.scene.render();
     }
 
     loadAssets() {

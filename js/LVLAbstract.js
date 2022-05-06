@@ -452,6 +452,15 @@ class LVLAbstract {
         light0.intensity = 1;
     }
 
+    renderScene() {
+        if(this.gameconfig.inputStates.pause){
+            if(!this.gui.showinggui)
+            this.gui.createPauseScreen();
+        }else{
+       this.createLvl();
+    }
+        this.scene.render();
+    }
 
     loadAssets() {
         throw new Error('You must implement this function');
@@ -460,8 +469,9 @@ class LVLAbstract {
     createScene() {
         throw new Error('You must implement this function');
     }
-
-    renderScene() {
+    createLvl() {
         throw new Error('You must implement this function');
     }
+
+    
 }

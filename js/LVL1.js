@@ -8,7 +8,7 @@ class LVL1 extends LVLAbstract {
         this.gui.createTooltip("images/LVL1/ControlsTooltip.png", "400px", "200px");
     }
 
-    renderScene() {
+    createLvl() {
         this.gameconfig.divFps.innerHTML = this.gameconfig.engine.getFps().toFixed() + " fps";
         this.gameconfig.rollingAverage.add(this.scene.getAnimationRatio());
         this.waveMovingPlatforms();
@@ -16,7 +16,6 @@ class LVL1 extends LVLAbstract {
         this.wavePickups();
         this.contactPickups();
         this.contactEndLevel();
-
         if (this.player.mesh.position.y < -30) {
             this.scene.activeCamera.lockedTarget = null
             if (!this.gui.showinggui)
@@ -25,7 +24,6 @@ class LVL1 extends LVLAbstract {
         if(this.player.hp>0)
         this.player.move(this.scene.activeCamera,this.enemies);
         this.playBGM(0.3);
-        this.scene.render();
     }
 
     loadAssets() {
@@ -143,7 +141,10 @@ class LVL1 extends LVLAbstract {
         },100)
 
         this.createLights();
-
+        if(this.gameconfig.inputStates.pause){
+            if(!this.gui.showinggui)
+                this.gui.createPauseScreen()
+        }
         return this.scene;
     }
 

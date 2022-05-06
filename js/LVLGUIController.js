@@ -132,7 +132,46 @@ class LVLGUIController {
         this.lvlcontroller.addControl(next);
         this.lvlcontroller.addControl(quit);
     }
+    createPauseScreen(){
+        console.log("test")
+        this.showinggui = true;
+        var instance = this;
+        var affichage=true;
+       
 
+        var next = BABYLON.GUI.Button.CreateImageOnlyButton("nextbtn", "images/common/NextButton.png");
+        next.width = "200px"
+        next.height = "100px";
+        next.cornerRadius = 10;
+        next.top = "70px;"
+        next.onPointerUpObservable.add(function () {
+            instance.lvlcontroller.removeControl(next);            
+            instance.lvlcontroller.removeControl(quit);
+            instance.gameconfig.inputStates.pause=false;
+            instance.showinggui=false;
+            affichage=false;
+            console.log("test")
+            return;
+
+            //instance.gameconfig.inputStates.pause=false;
+            
+        });
+
+        var quit = BABYLON.GUI.Button.CreateImageOnlyButton("quitbtn", "images/common/QuitButton.png");
+        quit.width = "150px"
+        quit.height = "100px";
+        quit.top = "200px";
+        quit.cornerRadius = 10;
+
+        quit.onPointerUpObservable.add(function () {
+            alert("nothing happens yet")
+        });
+      
+            this.lvlcontroller.addControl(next);
+            this.lvlcontroller.addControl(quit);
+        
+       
+    }
     createTooltip(source, width, height) {
         this.lvlcontroller.dispose();
         this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene);
