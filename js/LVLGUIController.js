@@ -6,6 +6,7 @@ class LVLGUIController {
         this.gameconfig = gameconfig;
         //to avoid calling multiple times and overlap guis
         this.showinggui = false;
+        //this.escapeState=false;
 
     }
 
@@ -133,7 +134,6 @@ class LVLGUIController {
         this.lvlcontroller.addControl(quit);
     }
     createPauseScreen(){
-        console.log("test")
         this.showinggui = true;
         var instance = this;
         var affichage=true;
@@ -144,19 +144,40 @@ class LVLGUIController {
         next.height = "100px";
         next.cornerRadius = 10;
         next.top = "70px;"
+        
+            /*window.addEventListener('keyup', (event) => {
+                if(instance.escapeState && event.key==='Escape'){
+                    console.log(instance.escapeState)
+                  
+                        instance.lvlcontroller.removeControl(next);            
+                        instance.lvlcontroller.removeControl(quit);
+                        instance.gameconfig.inputStates.pause=false;
+                        instance.showinggui=false;
+                        instance.escape=1;
+                        affichage=false;
+                        instance.escapeState=false;
+                        return;    
+                } 
+                     else{
+                        instance.escapeState=true;
+                    }        
+                
+               }, false);*/
+        
         next.onPointerUpObservable.add(function () {
             instance.lvlcontroller.removeControl(next);            
             instance.lvlcontroller.removeControl(quit);
             instance.gameconfig.inputStates.pause=false;
             instance.showinggui=false;
             affichage=false;
-            console.log("test")
+            //instance.escapeState=false;
             return;
 
             //instance.gameconfig.inputStates.pause=false;
             
         });
-
+        
+            
         var quit = BABYLON.GUI.Button.CreateImageOnlyButton("quitbtn", "images/common/QuitButton.png");
         quit.width = "150px"
         quit.height = "100px";
@@ -164,12 +185,16 @@ class LVLGUIController {
         quit.cornerRadius = 10;
 
         quit.onPointerUpObservable.add(function () {
-            alert("nothing happens yet")
+            instance.gameconfig.createNewEngine()
+            instance.gameconfig.newStats()
+            instance.gameconfig.inputStates.pause=false;
+            new MainMenu(instance.gameconfig);
+
         });
       
             this.lvlcontroller.addControl(next);
             this.lvlcontroller.addControl(quit);
-        
+            
        
     }
     createTooltip(source, width, height) {

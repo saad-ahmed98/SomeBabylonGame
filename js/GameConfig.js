@@ -60,8 +60,11 @@ class GameConfig{
         else if ((event.key === "e") || (event.key === "E")) {
             this.inputStates.attack = true;
         }else if(event.key==='Escape'){
-            this.inputStates.pause=true;
-        }
+            if(this.inputStates.pause)
+            this.inputStates.pause=false;
+            else
+            this.inputStates.pause=true;      
+          }
     }, false);
 
     //if the key will be released, change the states object 
@@ -82,7 +85,11 @@ class GameConfig{
         else if ((event.key === "e") || (event.key === "E")) {
             this.inputStates.attack = false;
         }else if(event.key==='Escape'){
+            if(this.inputStates.pause)
+            this.inputStates.pause=false;
+            else
             this.inputStates.pause=true;
+            
         }
     }, false);
 }
