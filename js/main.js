@@ -10,8 +10,8 @@ function startGame() {
     let canvas = document.querySelector("#myCanvas");
     divFps= document.getElementById("fps");
     divFps.style.display = "none"
-    divBarreJoueur= document.getElementsByClassName("progressbarWrapper");
-    divBarreJoueur[0].style.display = "none"
+    divBarreJoueur= document.getElementById("progressbarWrapper");
+    divBarreJoueur.style.display = "none"
     gameconfig = new GameConfig(canvas,divFps)
     gameconfig.newStats()
     new MainMenu(gameconfig);

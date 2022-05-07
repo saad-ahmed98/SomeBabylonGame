@@ -59,12 +59,15 @@ class Player extends Personnage {
     }
 
     updateHpBar() {
+        
         var healthBar = this.healthBar.getChildren()[0]
         var healthBarText = this.healthBar.getChildren()[1]
         if (this.hp <= 0) {
             this.hp = 0;
         }
-
+        var barre=document.getElementById("greenBar");
+        var barreBack=document.getElementById("progressbarWrapper");
+        barre.style.width=(this.hp*barreBack.style.width/this.gameconfig.stats["hp"])+"px";
         if (this.hp >= 0) {
             healthBar.scaling.x = this.hp / this.gameconfig.stats["hp"];
             healthBar.position.x = (1 - (this.hp / this.gameconfig.stats["hp"])) * -1;
