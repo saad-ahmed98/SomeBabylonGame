@@ -1,8 +1,8 @@
 class LVL1 extends LVLAbstract {
-    constructor(gameconfig) {
+    constructor(gameconfig,animate=true) {
         imageLoading = "images/LVL1/loading.png"
         titleLoading = "images/LVL1/title.png"
-        super(gameconfig, "lvl1");
+        super(gameconfig, "lvl1",animate);
         console.log("lvl1")
         }
 
@@ -19,8 +19,17 @@ class LVL1 extends LVLAbstract {
             if (!this.gui.showinggui)
                 this.gui.createGameOverScreen()
         }
-        if(this.cameraAnimation)
-            this.animateCamera(true)
+        if(this.cameraAnimation){
+
+            if(!this.animate){
+                this.scene.activeCamera.position.x=this.player.mesh.position.x
+                this.scene.activeCamera.position.y=this.player.mesh.position.y
+            }
+            
+                this.animateCamera(true)
+            }
+
+           
         else{
         if(this.player.hp>0)
         this.player.move(this.scene.activeCamera,this.enemies);
@@ -133,6 +142,7 @@ class LVL1 extends LVLAbstract {
         this.createPickups();
         this.createEndLevel();
 
+        
         this.scene.activeCamera =new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(this.endlvl.position.x, this.endlvl.position.y, -300), this.scene);
     
         this.createLights();

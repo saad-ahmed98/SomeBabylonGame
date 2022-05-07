@@ -28,8 +28,14 @@ class LVL4 extends LVLAbstract {
             if (!this.gui.showinggui)
                 this.gui.createGameOverScreen()
         }
-        if(this.cameraAnimation)
+        if(this.cameraAnimation){ 
+             if(!this.animate){
+                this.scene.activeCamera.position.x=this.player.mesh.position.x
+                this.scene.activeCamera.position.y=this.player.mesh.position.y
+            }
+        
             this.animateCamera(false)
+        }
         else{
         if (this.player.hp > 0)
             this.player.move(this.scene.activeCamera, this.enemies);

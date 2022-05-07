@@ -1,5 +1,7 @@
 class LVLAbstract {
-    constructor(gameconfig, lvl) {
+    constructor(gameconfig, lvl,animate=true) {
+        document.getElementById("progressbarWrapper").style.width=250;
+        document.getElementById("greenBar").style.width=250;
         divFps.style.display = "block"
         divBarreJoueur.style.display = "block"
         gameconfig.createNewEngine()
@@ -11,10 +13,12 @@ class LVLAbstract {
         this.endlvl;
         this.gameconfig = gameconfig;
         this.enemies = [];
+        this.animate=animate;
         this.gui = new LVLGUIController(this.scene, gameconfig, lvl);
         this.configureAssetManager();
         this.loadAssets();
         this.scene.assetsManager.load();
+
         this.cameraAnimation = true
         this.cameraStopX = false
     }

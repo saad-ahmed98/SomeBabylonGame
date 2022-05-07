@@ -65,16 +65,16 @@ class LVLGUIController {
             instance.gameconfig.stats = Object.assign({}, instance.gameconfig.statsprev);
             switch (instance.lvl) {
                 case "lvl1":
-                    newlvl = new LVL1(instance.gameconfig);
+                    newlvl = new LVL1(instance.gameconfig,false);
                     break
                 case "lvl2":
-                    newlvl = new LVL2(instance.gameconfig);
+                    newlvl = new LVL2(instance.gameconfig,false);
                     break
                 case "lvl3":
-                    newlvl = new LVL3(instance.gameconfig);
+                    newlvl = new LVL3(instance.gameconfig,false);
                     break
                 case "lvl4":
-                    newlvl = new LVL4(instance.gameconfig);
+                    newlvl = new LVL4(instance.gameconfig,false);
                     break
             }
         });
