@@ -4,9 +4,7 @@ class LVL1 extends LVLAbstract {
         titleLoading = "images/LVL1/title.png"
         super(gameconfig, "lvl1");
         console.log("lvl1")
-        
-        this.gui.createTooltip("images/LVL1/ControlsTooltip.png", "400px", "200px");
-    }
+        }
 
     createLvl() {
         this.gameconfig.divFps.innerHTML = this.gameconfig.engine.getFps().toFixed() + " fps";
@@ -21,8 +19,12 @@ class LVL1 extends LVLAbstract {
             if (!this.gui.showinggui)
                 this.gui.createGameOverScreen()
         }
+        if(this.cameraAnimation)
+            this.animateCamera(true)
+        else{
         if(this.player.hp>0)
         this.player.move(this.scene.activeCamera,this.enemies);
+        }
         this.playBGM(0.3);
     }
 
@@ -116,7 +118,7 @@ class LVL1 extends LVLAbstract {
 
     createScene() {
 
-        this.createPlayer(-750, 20);
+        this.createPlayer(-750, 0);
 
         let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 1687.5, depth: 1, width: 3200 }, this.scene);
         skybox.position.y = 100;
@@ -131,15 +133,8 @@ class LVL1 extends LVLAbstract {
         this.createPickups();
         this.createEndLevel();
 
-
-        var instance = this
-        new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -10), this.scene);
-        setTimeout(function(){
-            let followCamera = instance.createFollowCamera(150);
-            instance.scene.activeCamera = followCamera;
-
-        },100)
-
+        this.scene.activeCamera =new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(this.endlvl.position.x, this.endlvl.position.y, -300), this.scene);
+    
         this.createLights();
         if(this.gameconfig.inputStates.pause){
             if(!this.gui.showinggui)

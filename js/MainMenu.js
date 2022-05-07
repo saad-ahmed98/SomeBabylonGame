@@ -136,7 +136,6 @@ class MainMenu {
 
         for (let i = 1; i < 6; i++) {
             var lvl = BABYLON.GUI.Button.CreateImageOnlyButton("lvl"+i, "images/menu/lvl" + i + ".png");
-            console.log(lvl)
             lvl.width = "250px"
             lvl.height = "52px";
             lvl.color = "transparent"

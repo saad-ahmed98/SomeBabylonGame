@@ -14,6 +14,8 @@ class LVLAbstract {
         this.configureAssetManager();
         this.loadAssets();
         this.scene.assetsManager.load();
+        this.cameraAnimation = true
+        this.cameraStopX = false
     }
 
     wavePickups() {
@@ -32,6 +34,29 @@ class LVLAbstract {
     moveEnemies() {
         for (let i = 0; i < this.enemies.length; i++)
             this.enemies[i].move()
+    }
+
+    animateCamera(tooltip){
+        var diry = -1
+        console.log(this.scene.activeCamera.position.y-this.player.mesh.position.y)
+        if(this.scene.activeCamera.position.y-this.player.mesh.position.y<0)
+            diry = 1
+        if(!this.cameraStopX)
+        this.scene.activeCamera.position.x-=3
+        if(this.scene.activeCamera.position.x<=this.player.mesh.position.x){
+            this.cameraStopX = true
+            this.scene.activeCamera.position.y+=3*diry
+            var checky = this.scene.activeCamera.position.y<=this.player.mesh.position.y
+            if(diry==1){
+            checky = this.scene.activeCamera.position.y>=this.player.mesh.position.y
+            }
+            if(checky){
+            this.scene.activeCamera = this.createFollowCamera(200)
+            this.cameraAnimation = false
+            if(tooltip)
+                this.gui.createTooltip("images/LVL1/ControlsTooltip.png", "400px", "200px");
+            }
+        }
     }
 
     collisionObstaclesEnemies() {

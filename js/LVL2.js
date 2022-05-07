@@ -25,9 +25,12 @@ class LVL2 extends LVLAbstract {
             if (!this.gui.showinggui)
                 this.gui.createGameOverScreen()
         }
+        if(this.cameraAnimation)
+            this.animateCamera(false)
+        else{
         if (this.player.hp > 0)
             this.player.move(this.scene.activeCamera, this.enemies);
-
+        }
         if (this.player.hp <= 0) {
             if (!this.gui.showinggui)
                 this.gui.createGameOverScreen()
@@ -373,13 +376,7 @@ class LVL2 extends LVLAbstract {
 
         this.createEndLevel();
 
-        var instance = this
-        new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -10), this.scene);
-        setTimeout(function () {
-            let followCamera = instance.createFollowCamera(150);
-            instance.scene.activeCamera = followCamera;
-
-        }, 100)
+        this.scene.activeCamera =new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(this.endlvl.position.x, this.endlvl.position.y, -500), this.scene);
 
         this.createLights();
 
@@ -497,18 +494,18 @@ class LVL2 extends LVLAbstract {
         obj.material = mat1
 
 
-        obst = new Obstacle(175, 99, 100)
+        obst = new Obstacle(170, 99, 100)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.y = 310+obst.height;
-        obj.position.x = -850;
+        obj.position.x = -835;
         obst.mesh = obj;
         obstt.push(obst)
         obj.material = mat1
 
-        obst = new Obstacle(175, 99, 100)
+        obst = new Obstacle(170, 99, 100)
         obj = new BABYLON.MeshBuilder.CreateBox("", { height: obst.height, depth: obst.depth, width: obst.width }, this.scene);
         obj.position.y = 310;
-        obj.position.x = -850;
+        obj.position.x = -835;
         obst.mesh = obj;
         obstt.push(obst)
         obj.material = mat1

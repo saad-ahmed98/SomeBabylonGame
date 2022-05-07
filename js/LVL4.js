@@ -28,9 +28,12 @@ class LVL4 extends LVLAbstract {
             if (!this.gui.showinggui)
                 this.gui.createGameOverScreen()
         }
+        if(this.cameraAnimation)
+            this.animateCamera(false)
+        else{
         if (this.player.hp > 0)
             this.player.move(this.scene.activeCamera, this.enemies);
-
+        }
         if (this.player.hp <= 0) {
             if (!this.gui.showinggui)
                 this.gui.createGameOverScreen()
@@ -42,7 +45,6 @@ class LVL4 extends LVLAbstract {
         this.loadPlayer();
         this.loadEnemies();
         this.loadSounds();
-        //this.loadBuildings();
     }
 
     loadEnemies() {
@@ -172,7 +174,7 @@ class LVL4 extends LVLAbstract {
 
 
     createScene() {
-        this.createPlayer(-1000, 0);
+        this.createPlayer(-1000, -42.5);
         this.player.updateWeapon()
 
         var skyMaterial = new BABYLON.GridMaterial("skyMaterial", this.scene);
@@ -194,14 +196,7 @@ class LVL4 extends LVLAbstract {
         this.createEnemies();
 
         this.createEndLevel();
-        var instance = this
-        new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -10), this.scene);
-        setTimeout(function(){
-            let followCamera = instance.createFollowCamera(200);
-            instance.scene.activeCamera = followCamera;
-
-        },100)
-        
+        this.scene.activeCamera =new BABYLON.FreeCamera("freeCamera", new BABYLON.Vector3(this.endlvl.position.x, this.endlvl.position.y, -400), this.scene);
 
         this.createLights();
 

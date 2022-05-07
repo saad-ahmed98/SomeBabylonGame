@@ -268,9 +268,7 @@ class LVL3 extends LVLAbstract {
     }
 
     createScene() {
-        this.createPlayer(-60, -1120);
-
-        //this.createPlayer(-770, 280);
+        this.createPlayer(-770, 235);
 
         this.player.updateWeapon()
         let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 6700.8, depth: 1, width: 3200 }, this.scene);
