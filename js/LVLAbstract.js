@@ -1,6 +1,7 @@
 class LVLAbstract {
     constructor(gameconfig, lvl) {
         divFps.style.display = "block"
+        divBarreJoueur[0].style.display = "block"
         gameconfig.createNewEngine()
         this.scene = new BABYLON.Scene(gameconfig.engine);
         gameconfig.scenes.push(this.scene)

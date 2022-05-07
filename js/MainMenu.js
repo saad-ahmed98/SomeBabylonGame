@@ -2,7 +2,8 @@ class MainMenu {
     constructor(gameconfig) {
         imageLoading = "";
         titleLoading = "";
-        divFps.style.display = "none"
+        divFps.style.display = "none";
+        divBarreJoueur[0].style.display="none"
         this.gameconfig = gameconfig;
         this.scene = new BABYLON.Scene(gameconfig.engine);
         this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene);
