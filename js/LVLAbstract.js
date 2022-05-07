@@ -18,7 +18,6 @@ class LVLAbstract {
         this.configureAssetManager();
         this.loadAssets();
         this.scene.assetsManager.load();
-
         this.cameraAnimation = true
         this.cameraStopX = false
     }
