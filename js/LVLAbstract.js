@@ -11,7 +11,6 @@ class LVLAbstract {
         this.gameconfig = gameconfig;
         this.enemies = [];
         this.gui = new LVLGUIController(this.scene, gameconfig, lvl);
-
         this.configureAssetManager();
         this.loadAssets();
         this.scene.assetsManager.load();
@@ -454,11 +453,14 @@ class LVLAbstract {
 
     renderScene() {
         if(this.gameconfig.inputStates.pause){
-            if(!this.gui.showinggui)
+            if(!this.gui.showinggui && this.gui.canPause){
             this.gui.createPauseScreen();
-        }else{
-       this.createLvl();
-    }
+            }
+            else if(this.gui.timerPause)
+                this.gui.removePauseScreen();
+        }
+        if(!this.gui.isPaused)
+        this.createLvl();
         this.scene.render();
     }
 

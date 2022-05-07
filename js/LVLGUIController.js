@@ -7,6 +7,9 @@ class LVLGUIController {
         //to avoid calling multiple times and overlap guis
         this.showinggui = false;
         //this.escapeState=false;
+        this.isPaused = false;
+        this.timerPause = false;
+        this.canPause = true;
 
     }
 
@@ -24,6 +27,22 @@ class LVLGUIController {
             instance.gameoverScreen()
         }, 1500)
 
+    }
+
+    //on donne la possibilité d'enlever l'écran de pause que quelque secondes après appuye de la touche echappe
+    timerPauseActivate(){
+        var instance = this
+        setTimeout(() => {
+            if(instance.showinggui)
+            instance.timerPause = true
+        }, 500)
+    }
+
+    canPauseActivate(){
+        var instance = this
+        setTimeout(() => {
+            instance.canPause = true
+        }, 500)
     }
 
     gameoverScreen() {
@@ -134,53 +153,36 @@ class LVLGUIController {
         this.lvlcontroller.addControl(quit);
     }
     createPauseScreen(){
+        this.isPaused = true;
+        this.lvlcontroller.dispose();
+        this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene);
         this.showinggui = true;
+
+        this.timerPauseActivate()
+
         var instance = this;
-        var affichage=true;
        
+        var image = new BABYLON.GUI.Image("lvlclear", "images/common/Paused.png");
+        image.width = "600px";
+        image.height = "120px";
+        image.top = "-130px;"
 
-        var next = BABYLON.GUI.Button.CreateImageOnlyButton("nextbtn", "images/common/NextButton.png");
-        next.width = "200px"
-        next.height = "100px";
-        next.cornerRadius = 10;
-        next.top = "70px;"
+
+        var resume = BABYLON.GUI.Button.CreateImageOnlyButton("nextbtn", "images/common/ResumeButton.png");
+        resume.width = "300px"
+        resume.height = "100px";
+        resume.cornerRadius = 10;
+        resume.top = "70px;"
         
-            /*window.addEventListener('keyup', (event) => {
-                if(instance.escapeState && event.key==='Escape'){
-                    console.log(instance.escapeState)
-                  
-                        instance.lvlcontroller.removeControl(next);            
-                        instance.lvlcontroller.removeControl(quit);
-                        instance.gameconfig.inputStates.pause=false;
-                        instance.showinggui=false;
-                        instance.escape=1;
-                        affichage=false;
-                        instance.escapeState=false;
-                        return;    
-                } 
-                     else{
-                        instance.escapeState=true;
-                    }        
-                
-               }, false);*/
-        
-        next.onPointerUpObservable.add(function () {
-            instance.lvlcontroller.removeControl(next);            
-            instance.lvlcontroller.removeControl(quit);
-            instance.gameconfig.inputStates.pause=false;
-            instance.showinggui=false;
-            affichage=false;
-            //instance.escapeState=false;
+        resume.onPointerUpObservable.add(function () {
+            instance.removePauseScreen()
             return;
-
-            //instance.gameconfig.inputStates.pause=false;
             
-        });
-        
+        }); 
             
         var quit = BABYLON.GUI.Button.CreateImageOnlyButton("quitbtn", "images/common/QuitButton.png");
         quit.width = "150px"
-        quit.height = "100px";
+        quit.height = "80px";
         quit.top = "200px";
         quit.cornerRadius = 10;
 
@@ -191,12 +193,14 @@ class LVLGUIController {
             new MainMenu(instance.gameconfig);
 
         });
-      
-            this.lvlcontroller.addControl(next);
+
+            this.lvlcontroller.addControl(image);
+            this.lvlcontroller.addControl(resume);
             this.lvlcontroller.addControl(quit);
             
        
     }
+
     createTooltip(source, width, height) {
         this.lvlcontroller.dispose();
         this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene);
@@ -214,5 +218,14 @@ class LVLGUIController {
 
     removeTool(panel, image) {
         panel.removeControl(image)
+    }
+
+    removePauseScreen(){
+        this.showinggui = false;
+        this.timerPause = false;
+        this.lvlcontroller.dispose()
+        this.canPause = false;
+        this.canPauseActivate()
+        this.isPaused = false;
     }
 }

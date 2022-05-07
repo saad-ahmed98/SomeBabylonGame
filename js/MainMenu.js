@@ -142,6 +142,7 @@ class MainMenu {
             lvl.color = "transparent"
             lvl.top = (-200 + 80 * i) + "px;"
            lvl.onPointerUpObservable.add(function () {
+                if(i!=0)
                 instance.gameconfig.stats["walljump"] = true
                 instance.newLVL(i)
             });
