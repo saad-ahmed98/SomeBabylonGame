@@ -1,8 +1,8 @@
 class LVL3 extends LVLAbstract {
-    constructor(gameconfig) {
+    constructor(gameconfig,animate=true) {
         imageLoading = "images/LVL3/loading.png"
         titleLoading = "images/LVL3/title.png"
-        super(gameconfig, "lvl3");
+        super(gameconfig, "lvl3",animate);
         console.log("lvl3")
         
 

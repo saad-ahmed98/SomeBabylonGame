@@ -1,8 +1,8 @@
 class LVL4 extends LVLAbstract {
-    constructor(gameconfig) {
+    constructor(gameconfig,animate=true) {
         imageLoading = "images/LVL4/loading.png"
         titleLoading = "images/LVL4/title.png"
-        super(gameconfig, "lvl4");
+        super(gameconfig, "lvl4",animate);
         console.log("lvl4")
        
         this.teleports = []

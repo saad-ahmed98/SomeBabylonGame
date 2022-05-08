@@ -1,8 +1,8 @@
 class LVL2 extends LVLAbstract {
-    constructor(gameconfig) {
+    constructor(gameconfig,animate=true) {
         imageLoading = "images/LVL2/loading.png"
         titleLoading = "images/LVL2/title.png"
-        super(gameconfig, "lvl2");
+        super(gameconfig, "lvl2",animate);
         console.log("lvl2")
         
     }
@@ -29,6 +29,7 @@ class LVL2 extends LVLAbstract {
             {  if(!this.animate){
                 this.scene.activeCamera.position.x=this.player.mesh.position.x
                 this.scene.activeCamera.position.y=this.player.mesh.position.y
+                console.log("yes")
             }
             
                 this.animateCamera(false)
