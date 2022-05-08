@@ -20,7 +20,6 @@ class LVL1 extends LVLAbstract {
                 this.gui.createGameOverScreen()
         }
         if(this.cameraAnimation){
-
             if(!this.animate){
                 this.scene.activeCamera.position.x=this.player.mesh.position.x
                 this.scene.activeCamera.position.y=this.player.mesh.position.y

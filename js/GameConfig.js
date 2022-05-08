@@ -26,9 +26,10 @@ class GameConfig{
         this.stats = {
             "walljump":false,
             "hp":6,
-            "weapon":"fists"
+            "weapon":"fists",
         }
         this.statsprev = Object.assign( {}, this.stats );
+        
     }
 
 

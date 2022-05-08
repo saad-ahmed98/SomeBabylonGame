@@ -18,84 +18,15 @@ class Player extends Personnage {
             this.swordmesh.setEnabled(true)
     }
 
-    addHPBar(scene) {
-        var healthBarMaterial = new BABYLON.StandardMaterial("hb1mat", scene);
-        healthBarMaterial.diffuseColor = BABYLON.Color3.Green();
-        healthBarMaterial.backFaceCulling = false;
-
-        var healthBarContainerMaterial = new BABYLON.StandardMaterial("hb2mat", scene);
-        healthBarContainerMaterial.diffuseColor = BABYLON.Color3.Blue();
-        healthBarContainerMaterial.backFaceCulling = false;
-
-        var dynamicTexture = new BABYLON.DynamicTexture("dt1", 512, scene, true);
-        dynamicTexture.hasAlpha = true;
-
-        var healthBarTextMaterial = new BABYLON.StandardMaterial("hb3mat", scene);
-        healthBarTextMaterial.diffuseTexture = dynamicTexture;
-        healthBarTextMaterial.backFaceCulling = false;
-        healthBarTextMaterial.diffuseColor = BABYLON.Color3.Black();
-        var healthBar = BABYLON.MeshBuilder.CreatePlane("hb1", { width: 20, height: 5, subdivisions: 4 }, scene);
-        var healthBarContainer = BABYLON.MeshBuilder.CreatePlane("hb2", { width: 20, height: 5, subdivisions: 4 }, scene);
-        var healthBarText = BABYLON.MeshBuilder.CreatePlane("hb3", { width: 20, height: 20, subdivisions: 4 }, scene);
-
-        healthBar.position = new BABYLON.Vector3(0, 0, -.01);			// Move in front of container slightly.  Without this there is flickering.
-        healthBarContainer.position = new BABYLON.Vector3(10, 17, 0);     // Position above player.
-        healthBarText.position = new BABYLON.Vector3(0, -3.5, -.1);
-
-        healthBar.parent = healthBarContainer;
-        healthBarContainer.parent = this.mesh;
-        healthBarText.parent = healthBarContainer;
-        healthBarContainer.rotation = new BABYLON.Vector3(0, 2, 0);
-
-        this.healthBar = healthBarContainer
-        this.healthBar.lookAt(new BABYLON.Vector3(10000000 * -this.lookAt, 0, 0));
-
-
-
-
-        healthBar.material = healthBarMaterial;
-        healthBarContainer.material = healthBarContainerMaterial;
-        healthBarText.material = healthBarTextMaterial;
-    }
-
+    
     updateHpBar() {
-        
-        var healthBar = this.healthBar.getChildren()[0]
-        var healthBarText = this.healthBar.getChildren()[1]
+        cyborg.style.display = "block"
         if (this.hp <= 0) {
             this.hp = 0;
         }
-        var barre=document.getElementById("greenBar");
-        var barreBack=document.getElementById("progressbarWrapper");
-        barre.style.width=(this.hp*barreBack.style.width/this.gameconfig.stats["hp"])+"px";
-        if (this.hp >= 0) {
-            healthBar.scaling.x = this.hp / this.gameconfig.stats["hp"];
-            healthBar.position.x = (1 - (this.hp / this.gameconfig.stats["hp"])) * -1;
-
-            if (healthBar.scaling.x < .3) {
-                healthBar.material.diffuseColor = BABYLON.Color3.Red();
-            }
-            else if (healthBar.scaling.x < .5) {
-                healthBar.material.diffuseColor = BABYLON.Color3.Yellow();
-            }
-
-            var textureContext = healthBarText.material.diffuseTexture.getContext();
-            var size = healthBarText.material.diffuseTexture.getSize();
-            var text = this.hp + "/" + this.gameconfig.stats["hp"];
-            if (this.hp == 0) {
-                healthBarText.material.diffuseColor = BABYLON.Color3.Red();
-                text = "DEAD"
-            }
-
-            textureContext.clearRect(0, 0, size.width, size.height);
-
-            textureContext.font = "bold 120px Calibri";
-            var textSize = textureContext.measureText(text);
-            textureContext.fillStyle = "white";
-            textureContext.fillText(text, (size.width - textSize.width) / 2, (size.height - 120) / 2);
-
-            healthBarText.material.diffuseTexture.update();
-        }
+        console.log(this.hp)
+        document.getElementById("progressbarWrapper").style.width=this.gameconfig.stats["hp"]*30;
+        document.getElementById("greenBar").style.width=this.hp*30;
     }
 
 
@@ -127,8 +58,7 @@ class Player extends Personnage {
 
             }
             this.mesh.lookAt(new BABYLON.Vector3(10000000 * this.lookAt, 0, 0));
-            this.healthBar.lookAt(new BABYLON.Vector3(10000000 * -this.lookAt, 0, 0));
-            this.healthBar.position = new BABYLON.Vector3(10, 17, 0);
+           
 
             if (this.isattacking)
                 followCamera.rotationOffset = 90 * this.lookAt
@@ -146,8 +76,7 @@ class Player extends Personnage {
                 this.lookAt = -1
             }
             this.mesh.lookAt(new BABYLON.Vector3(10000000 * this.lookAt, 0, 0));
-            this.healthBar.lookAt(new BABYLON.Vector3(10000000 * -this.lookAt, 0, 0));
-            this.healthBar.position = new BABYLON.Vector3(-10, 17, 0);
+            
 
 
             if (this.jumping && !this.isattacking)
@@ -267,8 +196,7 @@ class Player extends Personnage {
             this.mesh.moveWithCollisions(new BABYLON.Vector3(-0.7 * this.gameconfig.rollingAverage.average * this.speed, 0, 0));
             this.mesh.moveWithCollisions(new BABYLON.Vector3(0, 2 * this.gameconfig.rollingAverage.average * this.speed, 0));
             this.mesh.lookAt(new BABYLON.Vector3(-10000000, 0, 0));
-            this.healthBar.lookAt(new BABYLON.Vector3(10000000, 0, 0));
-            this.healthBar.position = new BABYLON.Vector3(-10, 17, 0);
+           
 
             followCamera.rotationOffset = -90
             this.lookAt = -1
@@ -284,8 +212,7 @@ class Player extends Personnage {
                 this.mesh.moveWithCollisions(new BABYLON.Vector3(0.7 * this.gameconfig.rollingAverage.average * this.speed, 0, 0));
                 this.mesh.moveWithCollisions(new BABYLON.Vector3(0, 2 * this.gameconfig.rollingAverage.average * this.speed, 0));
                 this.mesh.lookAt(new BABYLON.Vector3(10000000, 0, 0));
-                this.healthBar.lookAt(new BABYLON.Vector3(-10000000, 0, 0));
-                this.healthBar.position = new BABYLON.Vector3(10, 17, 0);
+            
 
 
                 followCamera.rotationOffset = 90

@@ -5,13 +5,15 @@ let imageLoading="";
 let titleLoading="";
 let divFps;
 let divBarreJoueur;
+let cyborg;
 
 function startGame() {
     let canvas = document.querySelector("#myCanvas");
     divFps= document.getElementById("fps");
-    divFps.style.display = "none"
     divBarreJoueur= document.getElementById("progressbarWrapper");
-    divBarreJoueur.style.display = "none"
+    cyborg= document.getElementById("cyborg");
+    console.log(cyborg)
+
     gameconfig = new GameConfig(canvas,divFps)
     gameconfig.newStats()
     new MainMenu(gameconfig);

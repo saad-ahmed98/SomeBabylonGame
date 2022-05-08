@@ -1,7 +1,5 @@
 class LVLAbstract {
     constructor(gameconfig, lvl,animate=true) {
-        document.getElementById("progressbarWrapper").style.width=250;
-        document.getElementById("greenBar").style.width=250;
         divFps.style.display = "block"
         divBarreJoueur.style.display = "block"
         gameconfig.createNewEngine()
@@ -351,8 +349,6 @@ class LVLAbstract {
         this.player.mesh = playerbox
         this.player.swordmesh = mesh.getChildren()[0].getChildren()[3].getChildren()[0].getChildren()[0].getChildren()[0]
         this.player.swordmesh.setEnabled(false)
-
-        this.player.addHPBar(this.scene)
         this.player.updateHpBar()
 
     }

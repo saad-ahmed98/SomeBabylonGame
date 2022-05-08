@@ -67,8 +67,6 @@ class Pickup {
                 break
             case "hp":
                 player.gameconfig.stats["hp"] +=2
-                document.getElementById("progressbarWrapper").style.width=parseInt(document.getElementById("progressbarWrapper").style.width.replace("px",""))+50;
-                document.getElementById("greenBar").style.width=parseInt(document.getElementById("greenBar").style.width.replace("px",""))+50;
                 player.hp+=2
                 player.updateHpBar()
                 break
