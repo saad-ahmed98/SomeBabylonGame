@@ -11,7 +11,6 @@ class LVL4 extends LVLAbstract {
     createLvl() {
         this.gameconfig.divFps.innerHTML = this.gameconfig.engine.getFps().toFixed() + " fps";
         this.gameconfig.rollingAverage.add(this.scene.getAnimationRatio());
-        this.waveMovingPlatforms();
         this.collisionObstacles();
         this.verifyLifeEnemies();
         this.collisionObstaclesEnemies();
@@ -531,13 +530,6 @@ class LVL4 extends LVLAbstract {
         this.obstacles = obstt;
 
 
-    }
-
-    createGround() {
-        var ground = BABYLON.MeshBuilder.CreateBox("Ground", { depth: 100, width: 2500, height: 50 }, this.scene);
-        ground.position.y = -180;
-        ground.checkCollisions = true;
-        return ground;
     }
 
     createEndLevel() {

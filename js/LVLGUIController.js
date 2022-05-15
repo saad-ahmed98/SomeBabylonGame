@@ -30,15 +30,15 @@ class LVLGUIController {
     }
 
     //on donne la possibilité d'enlever l'écran de pause que quelque secondes après appuye de la touche echappe
-    timerPauseActivate(){
+    timerPauseActivate() {
         var instance = this
         setTimeout(() => {
-            if(instance.showinggui)
-            instance.timerPause = true
+            if (instance.showinggui)
+                instance.timerPause = true
         }, 500)
     }
 
-    canPauseActivate(){
+    canPauseActivate() {
         var instance = this
         setTimeout(() => {
             instance.canPause = true
@@ -65,16 +65,19 @@ class LVLGUIController {
             instance.gameconfig.stats = Object.assign({}, instance.gameconfig.statsprev);
             switch (instance.lvl) {
                 case "lvl1":
-                    newlvl = new LVL1(instance.gameconfig,false);
+                    newlvl = new LVL1(instance.gameconfig, false);
                     break
                 case "lvl2":
-                    newlvl = new LVL2(instance.gameconfig,false);
+                    newlvl = new LVL2(instance.gameconfig, false);
                     break
                 case "lvl3":
-                    newlvl = new LVL3(instance.gameconfig,false);
+                    newlvl = new LVL3(instance.gameconfig, false);
                     break
                 case "lvl4":
-                    newlvl = new LVL4(instance.gameconfig,false);
+                    newlvl = new LVL4(instance.gameconfig, false);
+                    break
+                case "lvl5":
+                    newlvl = new LVL5(instance.gameconfig, false);
                     break
             }
         });
@@ -118,19 +121,28 @@ class LVLGUIController {
             switch (instance.lvl) {
                 case "lvl1":
                     //switch to lvl2
+                    document.getElementById("cyborg").style.display="none";
                     new LVL2(instance.gameconfig);
                     break
                 case "lvl2":
                     //switch to lvl3
+                    document.getElementById("cyborg").style.display="none";
                     new LVL3(instance.gameconfig);
                     break
                 case "lvl3":
                     //switch to lvl4
+                    document.getElementById("cyborg").style.display="none";
                     new LVL4(instance.gameconfig);
                     break
                 case "lvl4":
                     //switch to lvl5
-                    new LVL4(instance.gameconfig);
+                    document.getElementById("cyborg").style.display="none";
+                    new LVL5(instance.gameconfig);
+                    break
+                case "lvl5":
+                    //switch to lvl5
+                    document.getElementById("cyborg").style.display="none";
+                    new EndCredits(instance.gameconfig);
                     break
             }
         });
@@ -152,7 +164,7 @@ class LVLGUIController {
         this.lvlcontroller.addControl(next);
         this.lvlcontroller.addControl(quit);
     }
-    createPauseScreen(){
+    createPauseScreen() {
         this.isPaused = true;
         this.lvlcontroller.dispose();
         this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene);
@@ -161,7 +173,7 @@ class LVLGUIController {
         this.timerPauseActivate()
 
         var instance = this;
-       
+
         var image = new BABYLON.GUI.Image("lvlclear", "images/common/Paused.png");
         image.width = "600px";
         image.height = "120px";
@@ -173,13 +185,13 @@ class LVLGUIController {
         resume.height = "100px";
         resume.cornerRadius = 10;
         resume.top = "70px;"
-        
+
         resume.onPointerUpObservable.add(function () {
             instance.removePauseScreen()
             return;
-            
-        }); 
-            
+
+        });
+
         var quit = BABYLON.GUI.Button.CreateImageOnlyButton("quitbtn", "images/common/QuitButton.png");
         quit.width = "150px"
         quit.height = "80px";
@@ -189,16 +201,16 @@ class LVLGUIController {
         quit.onPointerUpObservable.add(function () {
             instance.gameconfig.createNewEngine()
             instance.gameconfig.newStats()
-            instance.gameconfig.inputStates.pause=false;
+            instance.gameconfig.inputStates.pause = false;
             new MainMenu(instance.gameconfig);
 
         });
 
-            this.lvlcontroller.addControl(image);
-            this.lvlcontroller.addControl(resume);
-            this.lvlcontroller.addControl(quit);
-            
-       
+        this.lvlcontroller.addControl(image);
+        this.lvlcontroller.addControl(resume);
+        this.lvlcontroller.addControl(quit);
+
+
     }
 
     createTooltip(source, width, height) {
@@ -220,7 +232,7 @@ class LVLGUIController {
         panel.removeControl(image)
     }
 
-    removePauseScreen(){
+    removePauseScreen() {
         this.showinggui = false;
         this.timerPause = false;
         this.lvlcontroller.dispose()

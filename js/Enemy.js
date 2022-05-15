@@ -17,20 +17,26 @@ class Enemy extends Personnage {
         this.hp -= dmg
         this.updateHpBar()
         if (this.hp <= 0) {
-            if(this.hp!=-999)
-            this.deathSound(this.mesh._scene)
-            var instance = this
-            this.animationGroups[1].play()
-            for (let i = 0;i<this.bullets.length;i++){
-                if(!this.bullets[i].dead){
-                this.bullets[i].mesh.dispose()
-                this.bullets[i].dead = true
+            if (this.attackdmg > 0) {
+                if (this.hp != -999)
+                    this.deathSound(this.mesh._scene)
+                var instance = this
+                this.animationGroups[1].play()
+                for (let i = 0; i < this.bullets.length; i++) {
+                    if (!this.bullets[i].dead) {
+                        this.bullets[i].mesh.dispose()
+                        this.bullets[i].dead = true
+                    }
                 }
+                setTimeout(() => {
+                    instance.mesh.dispose()
+                    instance.hp = -999
+                }, 1400)
             }
-            setTimeout(() => {
-                instance.mesh.dispose()
-                instance.hp = -999
-            }, 1400)
+            else {
+                this.mesh.dispose()
+                this.bossanimations[3].play()
+            }
         }
     }
 
@@ -99,7 +105,7 @@ class Enemy extends Personnage {
         scene.assets.laserSound.play();
 
         var bullet = new Bullet(this.direction)
-        bullet.createBullet(this.mesh.position.x+2*this.direction,this.mesh.position.y+8,this.mesh._scene)
+        bullet.createBullet(this.mesh.position.x + 2 * this.direction, this.mesh.position.y + 8, this.mesh._scene)
         this.bullets.push(bullet)
     }
 
@@ -169,9 +175,42 @@ class Enemy extends Personnage {
         this.updateHpBar()
     }
 
+    createGenerator(scene) {
+        var box = new BABYLON.MeshBuilder.CreateBox("", { height: this.height, depth: this.width, width: 5 }, scene);
+        box.position.x = this.originalx;
+        box.position.y = this.originaly;
+        box.visibility = 0;
+
+
+        //actual character
+        var mesh = scene.assets.generators.pop();
+        this.bossanimations =  scene.assets.bossanimation
+        mesh.name = "";
+
+        mesh.parent = box;
+        mesh.position.x = 0;
+        mesh.position.z = 0;
+        mesh.position.y = -22;
+        mesh.scaling.x = 18;
+        mesh.scaling.z = 18;
+        mesh.scaling.y = 18;
+        //mesh.rotation = new BABYLON.Vector3(0, 0, 0);
+
+        this.mesh = box
+        this.attackdmg = 0
+
+        this.addHPBar(scene)
+        this.updateHpBar()
+
+        this.mesh.lookAt(new BABYLON.Vector3(10000000, 0, 0));
+        this.healthBar.lookAt(new BABYLON.Vector3(10000000, 0, 0));
+    }
+
     addHPBar(scene) {
         var healthBarMaterial = new BABYLON.StandardMaterial("hb1mat", scene);
+        
         healthBarMaterial.diffuseColor = BABYLON.Color3.Red();
+        
         healthBarMaterial.backFaceCulling = false;
 
 
@@ -194,28 +233,30 @@ class Enemy extends Personnage {
     }
 
     move() {
-        for(let i = 0;i<this.bullets.length;i++)
-            this.bullets[i].move()
-        if (!this.isattacking) {
-            this.mesh.position.y = this.mesh.position.y - 1
-            var x = Math.abs(this.mesh.position.x - this.player.mesh.position.x)
+        if (this.attackdmg > 0) {
+            for (let i = 0; i < this.bullets.length; i++)
+                this.bullets[i].move()
+            if (!this.isattacking) {
+                this.mesh.position.y = this.mesh.position.y - 1
+                var x = Math.abs(this.mesh.position.x - this.player.mesh.position.x)
 
-            if (this.alert && x <= 60) {
-                if (this.hptot != 4)
-                    this.moveTowardsPlayer()
-                else this.shoot(this.mesh._scene)
-            }
-            else if (this.mesh.position.y - this.player.mesh.position.y == -1 && x <= 150) {
-                if (this.hptot != 4)
-                    this.moveTowardsPlayer()
-                else this.shoot(this.mesh._scene)
-            }
-            else {
-                if (this.alert) {
-                    this.resetPatrolPosition()
-                    this.alert = false
+                if (this.alert && x <= 60) {
+                    if (this.hptot != 4)
+                        this.moveTowardsPlayer()
+                    else this.shoot(this.mesh._scene)
                 }
-                this.patrol()
+                else if (this.mesh.position.y - this.player.mesh.position.y == -1 && x <= 150) {
+                    if (this.hptot != 4)
+                        this.moveTowardsPlayer()
+                    else this.shoot(this.mesh._scene)
+                }
+                else {
+                    if (this.alert) {
+                        this.resetPatrolPosition()
+                        this.alert = false
+                    }
+                    this.patrol()
+                }
             }
         }
     }
@@ -275,10 +316,10 @@ class Enemy extends Personnage {
         }
     }
 
-        
+
     attackSound(scene) {
         var sound
-        if(this.attackdmg==2)
+        if (this.attackdmg == 2)
             sound = scene.assets.enemy2attack
         else sound = scene.assets.enemyattack
         sound.setVolume(0.4)
@@ -288,7 +329,7 @@ class Enemy extends Personnage {
 
     deathSound(scene) {
         var sound
-        if(this.attackdmg==2)
+        if (this.attackdmg == 2)
             sound = scene.assets.enemy2death
         else sound = scene.assets.enemydeath
         sound.setVolume(0.4)

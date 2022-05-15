@@ -20,6 +20,13 @@ class LVLAbstract {
         this.cameraStopX = false
     }
 
+    contactEndLevel() {
+        if (Math.abs(this.endlvl.position.x - this.player.mesh.position.x) <= 10 && Math.abs(this.endlvl.position.y - this.player.mesh.position.y) <= 10) {
+            if (!this.gui.showinggui)
+                this.gui.createLevelClearScreen()
+        }
+    }
+
     wavePickups() {
         for (let i = 0; i < this.pickups.length; i++) {
             this.pickups[i].move()
@@ -38,9 +45,8 @@ class LVLAbstract {
             this.enemies[i].move()
     }
 
-    animateCamera(tooltip){
+    animateCamera(tooltip,tooltiplink="",heigth="200px",width = "400px"){
         var diry = -1
-        console.log(this.scene.activeCamera.position.y-this.player.mesh.position.y)
         if(this.scene.activeCamera.position.y-this.player.mesh.position.y<0)
             diry = 1
         if(!this.cameraStopX)
@@ -56,7 +62,7 @@ class LVLAbstract {
             this.scene.activeCamera = this.createFollowCamera(200)
             this.cameraAnimation = false
             if(tooltip)
-                this.gui.createTooltip("images/LVL1/ControlsTooltip.png", "400px", "200px");
+                this.gui.createTooltip(tooltiplink, width, heigth);
             }
         }
     }
@@ -342,8 +348,10 @@ class LVLAbstract {
         mesh.scaling.z = 5;
         mesh.scaling.y = 5;
         mesh.rotation = new BABYLON.Vector3(0, 0, 0);
+        this.scene.assets.playeranimations[2].play(true)
+        this.scene.assets.playeranimations[0].stop()
+        this.scene.assets.playeranimations[0].loopAnimation = false
 
-        this.scene.assets.playeranimations[3].play(true)
 
         this.player.animationGroups = this.scene.assets.playeranimations
         this.player.mesh = playerbox
@@ -462,7 +470,7 @@ class LVLAbstract {
             "player task",
             "",
             "models/",
-            "character2.glb"
+            "character.glb"
         );
         meshTask.onSuccess = function (task) {
             instance.scene.assets.player = task.loadedMeshes[0]

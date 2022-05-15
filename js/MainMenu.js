@@ -144,7 +144,7 @@ class MainMenu {
             lvl.top = (-200 + 80 * i) + "px;"
            lvl.onPointerUpObservable.add(function () {
                 if(i!=0)
-                instance.gameconfig.stats["walljump"] = true
+                instance.gameconfig.newStats(true)
                 instance.newLVL(i)
             });
             this.lvlcontroller.addControl(lvl)
@@ -180,7 +180,7 @@ class MainMenu {
                 new LVL4(this.gameconfig)
                 break;
             case 5:
-                new LVL4(this.gameconfig)
+                new LVL5(this.gameconfig)
                 break;
         }
     }

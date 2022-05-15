@@ -19,7 +19,7 @@ class LVL2 extends LVLAbstract {
         this.contactPickups();
         this.contactEndLevel();
         this.moveEnemies();
-        //console.log("x:"+this.player.mesh.position.x+",y:"+this.player.mesh.position.y)
+        console.log("x:"+this.player.mesh.position.x+",y:"+this.player.mesh.position.y)
         if (this.player.mesh.position.y < -70) {
             this.scene.activeCamera.lockedTarget = null
             if (!this.gui.showinggui)
@@ -29,7 +29,6 @@ class LVL2 extends LVLAbstract {
             {  if(!this.animate){
                 this.scene.activeCamera.position.x=this.player.mesh.position.x
                 this.scene.activeCamera.position.y=this.player.mesh.position.y
-                console.log("yes")
             }
             
                 this.animateCamera(false)
@@ -366,6 +365,7 @@ class LVL2 extends LVLAbstract {
     }
     createScene() {
         this.createPlayer(-770, 400);
+        this.scene.clearColor = BABYLON.Color3.Black();
 
         let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 1687.5, depth: 1, width: 3200 }, this.scene);
         skybox.position.y = 100;
@@ -390,17 +390,7 @@ class LVL2 extends LVLAbstract {
         return this.scene;
     }
 
-    contactEndLevel() {
-        if (Math.abs(this.endlvl.position.x - this.player.mesh.position.x) <= 10 && Math.abs(this.endlvl.position.y - this.player.mesh.position.y) <= 10) {
-            if (!this.gui.showinggui)
-                this.gui.createLevelClearScreen()
-        }
-    }
-
     createEnemies() {
-
-        //hitbox
-
 
         var enemy = new Enemy(25, 20, 5, 0.2, this.player, -550, 200, 20)
         enemy.createEnemy1(this.scene)
@@ -573,12 +563,6 @@ class LVL2 extends LVLAbstract {
         this.obstacles = obstt;
     }
 
-    createGround() {
-        var ground = BABYLON.MeshBuilder.CreateBox("Ground", { depth: 100, width: 2500, height: 50 }, this.scene);
-        ground.position.y = -180;
-        ground.checkCollisions = true;
-        return ground;
-    }
 
     createEndLevel() {
         var obj = new BABYLON.MeshBuilder.CreateBox("", { height: 30, depth: 5, width: 15 }, this.scene);

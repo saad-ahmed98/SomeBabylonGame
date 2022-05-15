@@ -3,8 +3,6 @@ class Player extends Personnage {
         super(height, width, gameconfig.stats["hp"], speed)
         this.gameconfig = gameconfig
         this.swordmesh;
-
-        //variables d'état, à changer
         this.jumping = false;
         this.lookAt = 1;
         this.walljumpingleft = false;
@@ -24,18 +22,16 @@ class Player extends Personnage {
         if (this.hp <= 0) {
             this.hp = 0;
         }
-        console.log(this.hp)
         document.getElementById("progressbarWrapper").style.width=this.gameconfig.stats["hp"]*30;
         document.getElementById("greenBar").style.width=this.hp*30;
     }
 
 
     move(followCamera, enemies) {
-
         let idle = true;
         if (!this.jumping) {
             this.mesh.position.y = this.mesh.position.y - 2.2
-            this.animationGroups[2].play()
+            this.animationGroups[1].play()
         }
 
         if (this.gameconfig.inputStates.space) {
@@ -64,7 +60,7 @@ class Player extends Personnage {
                 followCamera.rotationOffset = 90 * this.lookAt
 
             if (this.jumping && !this.isattacking)
-                this.animationGroups[5].play()
+                this.animationGroups[4].play()
 
         }
         if (this.gameconfig.inputStates.left) {
@@ -80,10 +76,10 @@ class Player extends Personnage {
 
 
             if (this.jumping && !this.isattacking)
-                this.animationGroups[5].play()
+                this.animationGroups[4].play()
         }
         if (this.gameconfig.inputStates.left && this.gameconfig.inputStates.right)
-            followCamera.rotationOffset = 90
+            followCamera.rotationOffset = -90
 
         if (this.gameconfig.inputStates.attack) {
             idle = false
@@ -95,14 +91,14 @@ class Player extends Personnage {
             for (let i = 0; i < this.animationGroups; i++) {
                 this.animationGroups[i].stop()
             }
-            this.animationGroups[3].play(true)
+            this.animationGroups[2].play()
         }
     }
 
     attack(enemies) {
         var instance = this
         this.isattacking = true
-        this.animationGroups[6].play()
+        this.animationGroups[5].play()
         setTimeout(() => {
             instance.isattacking = false;
             instance.checkHit(enemies)
@@ -150,11 +146,16 @@ class Player extends Personnage {
         this.updateHpBar()
         if(this.hp>0)
         this.hurtSound(this.mesh._scene)
+        var instance = this;
         if (this.hp <= 0) {
             for (let i = 1; i < this.animationGroups; i++) {
                 this.animationGroups[i].stop()
             }
             this.animationGroups[0].play()
+            setTimeout(() =>{
+                instance.mesh.dispose()
+            },2500
+            )
         }
     }
 
@@ -231,7 +232,7 @@ class Player extends Personnage {
                 }
             }
         }
-        this.animationGroups[3].play()
+        this.animationGroups[1].play()
     }
 
 }

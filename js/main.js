@@ -12,7 +12,6 @@ function startGame() {
     divFps= document.getElementById("fps");
     divBarreJoueur= document.getElementById("progressbarWrapper");
     cyborg= document.getElementById("cyborg");
-    console.log(cyborg)
 
     gameconfig = new GameConfig(canvas,divFps)
     gameconfig.newStats()

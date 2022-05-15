@@ -14,7 +14,6 @@ class LVL3 extends LVLAbstract {
     createLvl() {
         this.gameconfig.divFps.innerHTML = this.gameconfig.engine.getFps().toFixed() + " fps";
         this.gameconfig.rollingAverage.add(this.scene.getAnimationRatio());
-        this.waveMovingPlatforms();
         this.collisionObstacles();
         this.verifyLifeEnemies();
         this.collisionObstaclesEnemies();
@@ -269,6 +268,7 @@ class LVL3 extends LVLAbstract {
 
     createScene() {
         this.createPlayer(-770, 235);
+        this.scene.clearColor = BABYLON.Color3.Black();
 
         this.player.updateWeapon()
         let skybox = new BABYLON.MeshBuilder.CreateBox("skybox", { height: 6700.8, depth: 1, width: 3200 }, this.scene);
@@ -297,13 +297,6 @@ class LVL3 extends LVLAbstract {
         this.createLights();
 
         return this.scene;
-    }
-
-    contactEndLevel() {
-        if (Math.abs(this.endlvl.position.x - this.player.mesh.position.x) <= 10 && Math.abs(this.endlvl.position.y - this.player.mesh.position.y) <= 10) {
-            if (!this.gui.showinggui)
-                this.gui.createLevelClearScreen()
-        }
     }
 
     createWave1() {
@@ -452,13 +445,6 @@ class LVL3 extends LVLAbstract {
 
         this.obstacles = obstt;
 
-    }
-
-    createGround() {
-        var ground = BABYLON.MeshBuilder.CreateBox("Ground", { depth: 100, width: 2500, height: 50 }, this.scene);
-        ground.position.y = -180;
-        ground.checkCollisions = true;
-        return ground;
     }
 
     moveElevator(){

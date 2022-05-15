@@ -23,10 +23,9 @@ class LVL1 extends LVLAbstract {
             if(!this.animate){
                 this.scene.activeCamera.position.x=this.player.mesh.position.x
                 this.scene.activeCamera.position.y=this.player.mesh.position.y
-                console.log("yes")
             }
             
-                this.animateCamera(true)
+                this.animateCamera(true,"images/LVL1/ControlsTooltip.png")
             }
 
            
@@ -151,13 +150,6 @@ class LVL1 extends LVLAbstract {
                 this.gui.createPauseScreen()
         }
         return this.scene;
-    }
-
-    contactEndLevel() {
-        if (Math.abs(this.endlvl.position.x - this.player.mesh.position.x) <= 10 && Math.abs(this.endlvl.position.y - this.player.mesh.position.y) <= 10) {
-            if (!this.gui.showinggui)
-                this.gui.createLevelClearScreen()
-        }
     }
 
     createPickups() {
@@ -314,13 +306,6 @@ class LVL1 extends LVLAbstract {
         obstt.push(obst)
 
         this.obstacles = obstt;
-    }
-
-    createGround() {
-        var ground = BABYLON.MeshBuilder.CreateBox("Ground", { depth: 100, width: 2500, height: 50 }, this.scene);
-        ground.position.y = -180;
-        ground.checkCollisions = true;
-        return ground;
     }
 
     createEndLevel() {

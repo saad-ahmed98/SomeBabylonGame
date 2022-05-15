@@ -22,9 +22,9 @@ class GameConfig{
         this.jumpingstarted+=this.jumpcounter;
     }
 
-    newStats(){
+    newStats(walljump=false){
         this.stats = {
-            "walljump":false,
+            "walljump":walljump,
             "hp":6,
             "weapon":"fists",
         }
