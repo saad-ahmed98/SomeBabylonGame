@@ -15,6 +15,9 @@ Maintenant libéré de la manipulation de Dr.Evil, il est temps pour toi de mett
 ## Démo
 Jouez au jeu [ici](https://saad-ahmed98.github.io/SomeBabylonGame/).
 
+## Showcase video
+Regardez une vidéo montrant le gameplay du jeu [ici](https://youtu.be/PsnpHTYTKYo).
+
 ## Code
 * Points forts :
   * Les collisions étaient initialement calculées avec un moteur physique. Nous avons changé cela par la suite et faisons maintenant tout cela à la main pour permettre d'effectuer des mouvements sur les plateformes qui ne sont pas réalistes et donc impossibles avec un moteur.
@@ -47,7 +50,7 @@ Jouez au jeu [ici](https://saad-ahmed98.github.io/SomeBabylonGame/).
   * **LVL3**: [Girls' Frontline - Cat and Mouse](https://youtu.be/Nu9hL9QZ9ik)
   * **LVL4**: [Girls' Frontline - Relative Behaviour](https://youtu.be/GUGG1s_CtSg)
   * **LVL5**: [Girls' Frontline - Deep Dive Boss (instrumental)](https://youtu.be/b7KHWeDV2zI)
-  * **Crédits**: [Girls' Frontline - Mission success] (https://www.youtube.com/watch?v=QFzZkS60a4U)
+  * **Crédits**: [Girls' Frontline - Mission success](https://www.youtube.com/watch?v=QFzZkS60a4U)
 * Tutos code:
   * **Barre vie ennemies**: https://www.babylonjs-playground.com/#3HQSB#4
   * **Afficher FPS**: https://forum.babylonjs.com/t/how-to-display-fps/7395
