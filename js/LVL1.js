@@ -25,7 +25,7 @@ class LVL1 extends LVLAbstract {
                 this.scene.activeCamera.position.y=this.player.mesh.position.y
             }
             
-                this.animateCamera(true,"images/LVL1/ControlsTooltip.png")
+                this.animateCamera(true,"images/LVL1/ControlsTooltip.png","210px","600px")
             }
 
            

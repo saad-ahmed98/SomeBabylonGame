@@ -36,6 +36,8 @@ class Enemy extends Personnage {
             else {
                 this.mesh.dispose()
                 this.bossanimations[3].play()
+                this.explosion.setVolume(0.3)
+                this.explosion.play()
             }
         }
     }
@@ -185,6 +187,7 @@ class Enemy extends Personnage {
         //actual character
         var mesh = scene.assets.generators.pop();
         this.bossanimations =  scene.assets.bossanimation
+        this.explosion = scene.assets.explosion
         mesh.name = "";
 
         mesh.parent = box;

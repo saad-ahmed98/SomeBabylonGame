@@ -193,6 +193,22 @@ class LVL5 extends LVLAbstract {
         };
 
         binaryTask = assetsManager.addBinaryFileTask(
+            "bgm",
+            "sounds/explosion.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.explosion = new BABYLON.Sound(
+                "bgm",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: false,
+                }
+            );
+        };
+
+        binaryTask = assetsManager.addBinaryFileTask(
             "laser",
             "sounds/laser.wav"
         );
