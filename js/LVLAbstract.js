@@ -1,5 +1,6 @@
 class LVLAbstract {
     constructor(gameconfig, lvl,animate=true) {
+        cyborg.style.display="none";
         divFps.style.display = "block"
         divBarreJoueur.style.display = "block"
         gameconfig.createNewEngine()
@@ -45,7 +46,7 @@ class LVLAbstract {
             this.enemies[i].move()
     }
 
-    animateCamera(tooltip,tooltiplink="",heigth="200px",width = "400px"){
+    animateCamera(tooltip,tooltiplink="",heigth="200px",width = "600px"){
         var diry = -1
         if(this.scene.activeCamera.position.y-this.player.mesh.position.y<0)
             diry = 1

@@ -6,12 +6,16 @@ class EndCredits {
         divBarreJoueur.style.display="none"
         cyborg.style.display="none"
         this.gameconfig = gameconfig;
+        this.playing = false
+
         this.scene = new BABYLON.Scene(gameconfig.engine);
         this.lvlcontroller = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, this.scene);
 
         this.gameconfig.scenes.push(this.scene)
 
         this.configureAssetManager();
+        this.loadSounds();
+
         this.scene.assetsManager.load();
 
     }
@@ -41,6 +45,15 @@ class EndCredits {
     }
 
     renderScene() {
+        var sound = this.scene.assets.bgm
+        var instance = this
+        sound.setVolume(0.5)
+        if (!this.playing && !sound.isPlaying){
+            setTimeout(function () {
+                instance.playing = true
+            },10000)
+            sound.play()
+        }
         this.scene.render();
     }
 
@@ -49,6 +62,28 @@ class EndCredits {
         this.scene.clearColor = BABYLON.Color3.Black();
         this.createCredits()
         
+    }
+
+    loadSounds() {
+        var instance = this;
+        var assetsManager = instance.scene.assetsManager;
+
+        var binaryTask = assetsManager.addBinaryFileTask(
+            "bgm",
+            "sounds/endcredits.mp3"
+        );
+        binaryTask.onSuccess = function (task) {
+            instance.scene.assets.bgm = new BABYLON.Sound(
+                "bgm",
+                task.data,
+                this.scene,
+                null,
+                {
+                    loop: false,
+                }
+            );
+        };
+
     }
 
 

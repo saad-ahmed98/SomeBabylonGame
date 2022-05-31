@@ -54,16 +54,14 @@ class LVLGUIController {
         image.height = "170px";
         image.top = "-150px;"
 
-        var retry = BABYLON.GUI.Button.CreateImageOnlyButton("retrybtn", "images/common/RetryButton.png");
-        retry.width = "200px"
-        retry.height = "100px";
-        retry.cornerRadius = 10;
-        retry.top = "70px;"
+        var respawning = new BABYLON.GUI.Image("gameover", "images/common/Respawning.png");
+        respawning.width ="500px";
+        respawning.height = "81px";
+        respawning.top = "60px;"
 
-        retry.onPointerUpObservable.add(function () {
+        setTimeout(function () {
             let newlvl;
             instance.gameconfig.stats = Object.assign({}, instance.gameconfig.statsprev);
-            document.getElementById("cyborg").style.display="none";
             switch (instance.lvl) {
                 case "lvl1":
                     newlvl = new LVL1(instance.gameconfig, false);
@@ -81,23 +79,11 @@ class LVLGUIController {
                     newlvl = new LVL5(instance.gameconfig, false);
                     break
             }
-        });
-
-        var quit = BABYLON.GUI.Button.CreateImageOnlyButton("quitbtn", "images/common/QuitButton.png");
-        quit.width = "150px"
-        quit.height = "80px";
-        quit.top = "200px";
-        quit.cornerRadius = 10;
-
-        quit.onPointerUpObservable.add(function () {
-            instance.gameconfig.createNewEngine()
-            instance.gameconfig.newStats()
-            new MainMenu(instance.gameconfig);
-        });
+        },3000)
 
         this.lvlcontroller.addControl(image);
-        this.lvlcontroller.addControl(retry);
-        this.lvlcontroller.addControl(quit);
+        this.lvlcontroller.addControl(respawning);
+
     }
 
     createLevelClearScreen() {

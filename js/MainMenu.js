@@ -167,6 +167,10 @@ class MainMenu {
         this.gameconfig.createNewEngine()
 
         switch (i) {
+            //but uniquement de test
+            case 0:
+                new EndCredits(this.gameconfig)
+                break;
             case 1:
                 new LVL1(this.gameconfig)
                 break;

@@ -96,23 +96,27 @@ class Player extends Personnage {
     }
 
     attack(enemies) {
+        this.animationGroups[5].stop();
         var instance = this
         this.isattacking = true
-        this.animationGroups[5].play()
+        this.animationGroups[5].speedRatio = 1.5
+        this.animationGroups[5].play();
+
         setTimeout(() => {
+            
             instance.isattacking = false;
-            instance.checkHit(enemies)
             instance.attackSound(instance.mesh._scene)
+            instance.checkHit(enemies)
             if (instance.gameconfig.stats["weapon"] == "sword")
                 instance.swingSword(instance.mesh._scene)
-        }, 500)
+        }, 400)
     }
 
     swingSword(scene) {
         var swing = scene.assets.swordSwingSound
+        swing.stop()
         swing.setVolume(0.1)
-        if (!swing.isPlaying)
-            swing.play()
+        swing.play()
     }
 
     attackSound(scene) {
@@ -173,9 +177,9 @@ class Player extends Personnage {
     weaponrange() {
         switch (this.gameconfig.stats["weapon"]) {
             case "fists":
-                return 3
-            case "sword":
                 return 5
+            case "sword":
+                return 6
         }
     }
 

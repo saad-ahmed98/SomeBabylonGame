@@ -47,6 +47,7 @@ Jouez au jeu [ici](https://saad-ahmed98.github.io/SomeBabylonGame/).
   * **LVL3**: [Girls' Frontline - Cat and Mouse](https://youtu.be/Nu9hL9QZ9ik)
   * **LVL4**: [Girls' Frontline - Relative Behaviour](https://youtu.be/GUGG1s_CtSg)
   * **LVL5**: [Girls' Frontline - Deep Dive Boss (instrumental)](https://youtu.be/b7KHWeDV2zI)
+  * **Crédits**: [Girls' Frontline - Mission success] (https://www.youtube.com/watch?v=QFzZkS60a4U)
 * Tutos code:
   * **Barre vie ennemies**: https://www.babylonjs-playground.com/#3HQSB#4
   * **Afficher FPS**: https://forum.babylonjs.com/t/how-to-display-fps/7395

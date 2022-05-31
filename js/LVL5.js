@@ -90,51 +90,6 @@ class LVL5 extends LVLAbstract {
         meshTask.onSuccess = function (task) {
             instance.scene.assets.door = task.loadedMeshes[0]
         };
-        /*
-        meshTask = this.scene.assetsManager.addMeshTask(
-            "torch task",
-            "",
-            "models/",
-            "LVL3/torch.babylon"
-        );
-
-        meshTask.onSuccess = function (task) {
-            instance.scene.assets.torch = task.loadedMeshes[0]
-        };
-
-        meshTask = this.scene.assetsManager.addMeshTask(
-            "pod task",
-            "",
-            "models/",
-            "LVL3/pod.babylon"
-        );
-
-        meshTask.onSuccess = function (task) {
-            instance.scene.assets.pod = task.loadedMeshes[0]
-        };
-
-        meshTask = this.scene.assetsManager.addMeshTask(
-            "switch task",
-            "",
-            "models/",
-            "LVL3/switch.babylon"
-        );
-
-        meshTask.onSuccess = function (task) {
-            instance.scene.assets.switch = task.loadedMeshes[0]
-        };
-
-        meshTask = this.scene.assetsManager.addMeshTask(
-            "tile task",
-            "",
-            "models/",
-            "LVL3/tile.babylon"
-        );
-
-        meshTask.onSuccess = function (task) {
-            instance.scene.assets.tile = task.loadedMeshes[0]
-        };
-        */
     }
 
     loadEnemies() {
